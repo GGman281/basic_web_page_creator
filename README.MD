@@ -1,0 +1,1 @@
+Create a basic webpage. Practically a base for your page without any scripts.
