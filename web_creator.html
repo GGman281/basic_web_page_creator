@@ -7,11 +7,30 @@
 		<script src="control.js"></script>
 	</head>
 	<body>
-		<div id="test">
-			Test.
+		<div id="title">
+			<h1>Web page creator</h1>
 		</div>
-		<div>
-			<button onclick="test()"> Change text test </button>
+		<div class="row">
+			<h2 class="type_title">Control</h2>
+			<h2 class="type_title">Page preview</h2>
+			<h2 class="type_title">Selection</h2>
+		</div>
+		<div class="row" id="middle">
+			<div id="add_element_menu">
+				Chose an element to add:
+				<select name="elements">
+					
+				</select>
+				<button onclick="">Add</button>
+			</div>
+			<div id="page">
+				<iframe src="created page/your_page.html" id="embed"></iframe>
+			</div>
+			<div id="structure">
+				<ul>
+					<li>WIP</li>
+				</ul>
+			</div>
 		</div>
 	</body>
 </html>
