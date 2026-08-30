@@ -4,33 +4,58 @@
 		<title>Web page creator</title>
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="style.css">
-		<script src="control.js"></script>
+		<script src="control.js" defer></script>
 	</head>
 	<body>
 		<div id="title">
 			<h1>Web page creator</h1>
 		</div>
-		<div class="row">
-			<h2 class="type_title">Control</h2>
-			<h2 class="type_title">Page preview</h2>
-			<h2 class="type_title">Selection</h2>
-		</div>
+		
 		<div class="row" id="middle">
 			<div id="add_element_menu">
-				Chose an element to add:
-				<select name="elements">
-					
-				</select>
-				<button onclick="">Add</button>
+				<div>
+					<h2 class="type_title">Control</h2>
+				</div>
+				<div id="import">
+					Choose project folder: 
+					<input type="file" id="folder" webkitdirectory multiple style="display: none"/>
+					<button onclick='folder.click()'>Browse</button>
+				</div>
+				<div>
+					Chose an element to add:
+				</div>
+				<div>
+					<select name="elements">
+						
+					</select>
+				</div>
+				<div>
+					<button onclick="">Add</button>
+				</div>
 			</div>
+			
 			<div id="page">
-				<iframe src="created page/your_page.html" id="embed"></iframe>
+				<div>
+					<h2 class="type_title">Page preview</h2>
+				</div>
+				<iframe src="default.html" id="embed"></iframe>
 			</div>
+			
 			<div id="structure">
+				<div>
+					<h2 class="type_title">Selection</h2>
+				</div>
 				<ul>
 					<li>WIP</li>
 				</ul>
 			</div>
+		</div>
+		
+		<div id="export" class="row">
+			Export all three files for the whole project: 
+			<button>Export html file</button>
+			<button>Export stylesheet file</button>
+			<button>Export JavaScript file</button>
 		</div>
 	</body>
 </html>

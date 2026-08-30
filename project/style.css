@@ -33,22 +33,21 @@ button:hover
 }
 #middle
 {
-    justify-content: space-between;
-    height: 40em;
+    height: 50em;
 }
 #add_element_menu
 {
     display:flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: center;
     width: 20%;
 }
 #page
 {
     display:flex;
     flex-direction: column;
-    justify-content: start;
-    width:60em;
+    justify-content: center;
+    width:50%;
 }
 #embed
 {
@@ -56,13 +55,6 @@ button:hover
     background-color: white;
 }
 #structure
-{
-    display:flex;
-    flex-direction: column;
-    justify-content: start;
-    width: 60em;
-}
-#export
 {
     display:flex;
     flex-direction: column;
