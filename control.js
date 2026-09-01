@@ -1,24 +1,23 @@
 // get and fetch working directory
-const importFolder = document.getElementById("folder");
-importFolder.addEventListener("change", () =>
+const import_Folder = document.getElementById("folder");
+const iframe = document.getElementById("embed");
+
+import_Folder.addEventListener("change", () =>
     {
-        if(importFolder.files)
+        if(import_Folder.files)
         {
-            fetchFolder()
+            fetch_Folder()
         }
     });
 
 
-async function fetchFolder()
+async function fetch_Folder()
 {
     let html_file;
     let js_file;
     let css_file;
     
-    const iframe = document.getElementById("embed")
-    
-    
-    for(const file of importFolder.files)
+    for(const file of import_Folder.files)
     {
         if(file.name.endsWith(".html"))
         {
@@ -39,7 +38,15 @@ async function fetchFolder()
     const css_text = await css_file.text();
     
     let parsed_html = check_html(html_text);
-    console.log(parsed_html);
+    
+    update_iframe(parsed_html)
+    
+}
+
+
+function update_iframe(parsed_html)
+{
+    iframe.srcdoc = parsed_html.documentElement.outerHTML;
 }
 
 function check_html(html_text)
