@@ -2,14 +2,48 @@
 const import_Folder = document.getElementById("folder");
 const iframe = document.getElementById("embed");
 
-import_Folder.addEventListener("change", () =>
-    {
-        if(import_Folder.files)
-        {
-            fetch_Folder()
-        }
-    });
+let parsed_html;
 
+import_Folder.addEventListener("change", () =>
+{
+    if(import_Folder.files)
+    {
+        fetch_Folder()
+    }
+});
+
+window.onload = function() {
+  _init_();
+}; 
+
+async function _init_()
+{
+    iframe.srcdoc = "";
+    iframe.removeAttribute("srcdoc");
+    iframe.src = "default.html";
+}
+
+
+
+
+function check_html(html_text)
+{
+    if(!html_text)
+    {
+        html_text = "<!DOCTYPE HTML>\n";
+    }
+    
+    // check for <!DOCTYPE HTML>
+    if(!html_text.toLowerCase().startsWith("<!doctype html>"))
+    {
+        alert("Error: doctype is not specified");
+        html_text = "<!DOCTYPE HTML>\n" + html_text;
+    }
+    
+    const parser = new DOMParser();
+    const document = parser.parseFromString(html_text, "text/html");
+    return document;
+}
 
 async function fetch_Folder()
 {
@@ -37,7 +71,7 @@ async function fetch_Folder()
     const js_text = await js_file.text();
     const css_text = await css_file.text();
     
-    let parsed_html = check_html(html_text);
+    parsed_html = check_html(html_text);
     
     update_iframe(parsed_html)
     
@@ -49,21 +83,32 @@ function update_iframe(parsed_html)
     iframe.srcdoc = parsed_html.documentElement.outerHTML;
 }
 
-function check_html(html_text)
+function download(type)
 {
-    if(!html_text)
+    if(!parsed_html)
     {
-        html_text = "<!DOCTYPE HTML>\n";
+        console.error("Error: html file is empty. Make sure to choose directory with html file");
+        return;
     }
-    
-    // check for <!DOCTYPE HTML>
-    if(!html_text.toLowerCase().startsWith("<!doctype html>"))
+    if(type = "html")
     {
-        alert("Error: doctype is not specified");
-        html_text = "<!DOCTYPE HTML>\n" + html_text;
+        var a = window.document.createElement("a");
+        a.style.display = 'none';
+        a.href = window.URL.createObjectURL(new Blob([parsed_html], {type: "text/html"}));
+        
+        a.download = "test.html";
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
     }
-    
-    const parser = new DOMParser();
-    const document = parser.parseFromString(html_text, "text/html");
-    return document;
+    else if(type = "css")
+    {
+        
+    }
+    else if(type = "js")
+    {
+        
+    }
 }
