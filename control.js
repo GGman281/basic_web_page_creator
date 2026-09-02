@@ -51,25 +51,58 @@ async function fetch_Folder()
     let js_file;
     let css_file;
     
+    let valid_file_amount;
     for(const file of import_Folder.files)
     {
         if(file.name.endsWith(".html"))
         {
             html_file = file;
+            valid_file_amount++;
         }
         else if(file.name.endsWith(".js"))
         {
             js_file = file;
+            valid_file_amount++;
         }
         else if(file.name.endsWith(".css"))
         {
             css_file = file;
+            valid_file_amount++;
         }
     }
     
-    const html_text = await html_file.text();
-    const js_text = await js_file.text();
-    const css_text = await css_file.text();
+    if(valid_file_amount++ > 3)
+    {
+        alert("Warning! Too much files of type .js, .html, .css. Result may be undefined. \nPlease make sure there is exactly one of each");
+    }
+    
+    let html_text;
+    
+    
+    if(!js_file)
+    {
+        // TODO 
+    }
+    if(!css_file)
+    {
+        // TODO
+    }
+    if(!html_file)
+    {
+        html_text = 
+        "<!DOCTYPE HTML>\n" +
+        "<html>\n" +        
+        "   <head>\n" +        
+        "   </head>\n" +        
+        "   <body>\n" +        
+        "       Empty project. Brand new beginning :)" +        
+        "   </body>\n" +        
+        "</html>\n";
+    }
+    else
+    {
+        html_text = await html_file.text();
+    }
     
     parsed_html = check_html(html_text);
     
@@ -90,13 +123,16 @@ function download(type)
         console.error("Error: html file is empty. Make sure to choose directory with html file");
         return;
     }
+    
+    
     if(type = "html")
     {
         var a = window.document.createElement("a");
         a.style.display = 'none';
-        a.href = window.URL.createObjectURL(new Blob([parsed_html], {type: "text/html"}));
+        a.href = window.URL.createObjectURL(new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"}));
         
         a.download = "test.html";
+        console.log(parsed_html);
         
         document.body.appendChild(a);
         a.click();
@@ -105,10 +141,10 @@ function download(type)
     }
     else if(type = "css")
     {
-        
+        // TODO
     }
     else if(type = "js")
     {
-        
+        // TODO
     }
 }
