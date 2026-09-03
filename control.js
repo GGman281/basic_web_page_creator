@@ -116,7 +116,49 @@ async function fetch_Folder()
         }
     }
     
+    update_element_menu();
     update_iframe();
+}
+
+function update_element_menu()
+{
+    let element_list_node = document.getElementById("element_list");
+    
+    
+    const head_li = document.createElement("li");
+    head_li.textContent = "html"
+    element_list_node.appendChild(head_li);
+    
+    const head_ul = document.createElement("ul");
+    element_list_node.appendChild(head_ul);
+    print_element_menu(parsed_html.head, head_ul);
+    
+    
+    const body_li = document.createElement("li");
+    body_li.textContent = "body"
+    element_list_node.appendChild(body_li);
+    
+    const body_ul = document.createElement("ul");
+    element_list_node.appendChild(body_ul);
+    print_element_menu(parsed_html.body, body_ul);
+    
+    
+}
+
+function print_element_menu(from, element_list_node)
+{
+    for(const element of from.children)
+    {
+        const li = document.createElement("li");
+        li.textContent = element.tagName.toLowerCase();
+        element_list_node.appendChild(li);
+        if(element.children.length > 0)
+        {
+            const ul = document.createElement("ul");
+            print_element_menu(element, ul);
+            element_list_node.appendChild(ul);
+        }
+    }
 }
 
 function fix_displayable_html_scripts()
