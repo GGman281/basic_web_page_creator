@@ -13,8 +13,7 @@ button
 }
 button:hover
 {
-    
-    background: darkgray;
+    background: gray;
     border: 0.1em solid white;
     transition: 0.2s;
 }
@@ -67,4 +66,13 @@ button:hover
     display:flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+}
+#export button
+{
+    margin-top: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    width: 60em;
+    border-radius: 1em;
 }

@@ -45,12 +45,13 @@ function check_html(html_text)
     return document;
 }
 
+
+
+let html_file;
+let js_file;
+let css_file;
 async function fetch_Folder()
 {
-    let html_file;
-    let js_file;
-    let css_file;
-    
     let valid_file_amount;
     for(const file of import_Folder.files)
     {
@@ -73,20 +74,16 @@ async function fetch_Folder()
     
     if(valid_file_amount++ > 3)
     {
-        alert("Warning! Too much files of type .js, .html, .css. Result may be undefined. \nPlease make sure there is exactly one of each");
+        alert("Warning! Too much files of type .js, .html or .css. Result may be undefined. \nPlease make sure there is exactly one of each");
+        return;
     }
     
-    let html_text;
-    
-    
-    if(!js_file)
-    {
-        // TODO 
-    }
     if(!css_file)
     {
         // TODO
     }
+    
+    let html_text;
     if(!html_file)
     {
         html_text = 
@@ -103,15 +100,85 @@ async function fetch_Folder()
     {
         html_text = await html_file.text();
     }
-    
     parsed_html = check_html(html_text);
     
-    update_iframe(parsed_html)
+    if(js_file)
+    {
+        let relative_js_path = js_file.webkitRelativePath;
+        // check if javascript file is already connected
+        if(is_js_in_html(js_file.name))
+        {
+            fix_displayable_html_scripts(js_file);
+        }
+        else
+        {
+            console.log("Script is not connected");
+        }
+    }
     
+    update_iframe();
 }
 
+function fix_displayable_html_scripts()
+{
+    if(!js_file)
+    {
+        return;
+    }
+    const scripts = parsed_html.scripts;
+    if(scripts)
+    {
+        for(let i = 0; i < scripts.length; i++)
+        {
+            if(scripts[i].src.endsWith(js_file.name))
+            {
+                parsed_html.scripts[i].src = js_file.webkitRelativePath;
+            }
+        }
+    }
+}
 
-function update_iframe(parsed_html)
+function clean_script_path()
+{
+    if(!js_file)
+    {
+        return;
+    }
+    
+    const scripts = parsed_html.scripts;
+    if(scripts)
+    {
+        for(let i = 0; i < scripts.length; i++)
+        {
+            if(scripts[i].src.endsWith(js_file.name))
+            {
+                parsed_html.scripts[i].src = js_file.name;
+            }
+        }
+    }
+}
+
+function is_js_in_html(js_file_name)
+{
+    if(!js_file_name)
+    {
+        return;
+    }
+    const scripts = parsed_html.scripts;
+    if(scripts)
+    {
+        for(const script of scripts)
+        {
+            if(script.src.endsWith(js_file_name) )
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function update_iframe()
 {
     iframe.srcdoc = parsed_html.documentElement.outerHTML;
 }
@@ -123,16 +190,16 @@ function download(type)
         console.error("Error: html file is empty. Make sure to choose directory with html file");
         return;
     }
-    
-    
     if(type = "html")
     {
         var a = window.document.createElement("a");
         a.style.display = 'none';
-        a.href = window.URL.createObjectURL(new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"}));
         
-        a.download = "test.html";
-        console.log(parsed_html);
+        clean_script_path();
+        a.href = window.URL.createObjectURL(new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"}));
+        fix_displayable_html_scripts();
+        
+        a.download = "index.html";
         
         document.body.appendChild(a);
         a.click();
