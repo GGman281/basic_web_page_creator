@@ -294,6 +294,20 @@ function update_iframe()
     iframe.src = "";
 }
 
+function prompt_name()
+{
+    let name = prompt("Put file name here: ");
+    if(name === null || name.length === 0)
+    {
+        let repeat = confirm("Warning: input field is empty or user cancelled. \nConfirm to repeat the process");
+        while(repeat && (name === null || name.length === 0))
+        {
+            name = prompt("Put file name here: ");
+        }
+    }
+    return name;
+}
+
 function download(type)
 {
     if(!parsed_html)
@@ -313,7 +327,15 @@ function download(type)
         a.href = window.URL.createObjectURL(new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"}));
         fix_displayable_html_scripts();
         
-        a.download = html_file.name;
+        let filename = prompt_name();
+        if((filename === null || filename.length === 0))
+        {
+            a.download = html_file.name;
+        }
+        else
+        {
+            a.download = filename + ".html";
+        }
         
         document.body.appendChild(a);
         a.click();
@@ -327,7 +349,15 @@ function download(type)
         
         a.href = window.URL.createObjectURL(new Blob([css_file], {type: "text/stylesheet"}));
         
-        a.download = css_file.name;
+        let filename = prompt_name();
+        if((filename === null || filename.length === 0))
+        {
+            a.download = css_file.name;
+        }
+        else
+        {
+            a.download = filename + ".css";
+        }
         
         document.body.appendChild(a);
         a.click();
@@ -341,7 +371,15 @@ function download(type)
         
         a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/javascript"}));
         
-        a.download = js_file.name;
+        let filename = prompt_name();
+        if((filename === null || filename.length === 0))
+        {
+            a.download = js_file.name;
+        }
+        else
+        {
+            a.download = filename + ".js";
+        }
         
         document.body.appendChild(a);
         a.click();
