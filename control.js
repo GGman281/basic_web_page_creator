@@ -325,7 +325,7 @@ function download(type)
         var a = window.document.createElement("a");
         a.style.display = 'none';
         
-        a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/html"}));
+        a.href = window.URL.createObjectURL(new Blob([css_file], {type: "text/stylesheet"}));
         
         a.download = css_file.name;
         
@@ -339,7 +339,7 @@ function download(type)
         var a = window.document.createElement("a");
         a.style.display = 'none';
         
-        a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/html"}));
+        a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/javascript"}));
         
         a.download = js_file.name;
         
