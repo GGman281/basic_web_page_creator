@@ -232,7 +232,7 @@ function download(type)
         console.error("Error: html file is empty. Make sure to choose directory with html file");
         return;
     }
-    if(type = "html")
+    if(type === "html")
     {
         var a = window.document.createElement("a");
         a.style.display = 'none';
@@ -248,12 +248,23 @@ function download(type)
         
         document.body.removeChild(a);
     }
-    else if(type = "css")
+    else if(type === "css")
     {
-        // TODO
+        
     }
-    else if(type = "js")
+    else if(type === "js")
     {
-        // TODO
+        var a = window.document.createElement("a");
+        a.style.display = 'none';
+        
+        clean_script_path();
+        a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/html"}));
+        
+        a.download = "script.js";
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
     }
 }
