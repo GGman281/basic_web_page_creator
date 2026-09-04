@@ -200,9 +200,30 @@ function clean_script_path()
     {
         for(let i = 0; i < scripts.length; i++)
         {
-            if(scripts[i].src.endsWith(js_file.name))
+            if(scripts[i].src.endsWith(js_file.webkitRelativePath))
             {
                 parsed_html.scripts[i].src = js_file.name;
+            }
+        }
+    }
+}
+
+
+function clean_stylesheet_path()
+{
+    if(!css_file)
+    {
+        return;
+    }
+    
+    const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
+    if(stylesheets)
+    {
+        for(let i = 0; i < stylesheets.length; i++)
+        {
+            if(stylesheets[i].href.endsWith(css_file.webkitRelativePath))
+            {
+                stylesheets[i].href = css_file.name;
             }
         }
     }
@@ -288,10 +309,11 @@ function download(type)
         a.style.display = 'none';
         
         clean_script_path();
+        clean_stylesheet_path();
         a.href = window.URL.createObjectURL(new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"}));
         fix_displayable_html_scripts();
         
-        a.download = "index.html";
+        a.download = html_file.name;
         
         document.body.appendChild(a);
         a.click();
@@ -299,8 +321,18 @@ function download(type)
         document.body.removeChild(a);
     }
     else if(type === "css")
-    {
-        // TODO
+    { 
+        var a = window.document.createElement("a");
+        a.style.display = 'none';
+        
+        a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/html"}));
+        
+        a.download = css_file.name;
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
     }
     else if(type === "js")
     {
@@ -309,7 +341,7 @@ function download(type)
         
         a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/html"}));
         
-        a.download = "script.js";
+        a.download = js_file.name;
         
         document.body.appendChild(a);
         a.click();
