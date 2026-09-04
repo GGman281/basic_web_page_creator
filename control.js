@@ -78,11 +78,6 @@ async function fetch_Folder()
         return;
     }
     
-    if(!css_file)
-    {
-        // TODO
-    }
-    
     let html_text;
     if(!html_file)
     {
@@ -104,11 +99,24 @@ async function fetch_Folder()
     
     if(js_file)
     {
-        let relative_js_path = js_file.webkitRelativePath;
-        // check if javascript file is already connected
+        // check if javascript file is connected
         if(is_js_in_html(js_file.name))
         {
-            fix_displayable_html_scripts(js_file);
+            fix_displayable_html_scripts();
+        }
+        else
+        {
+            console.log("Script is not connected");
+        }
+    }
+    
+    
+    if(css_file)
+    {
+        // check if stylesheet file is connected
+        if(is_css_in_html(css_file.name))
+        {
+            fix_displayable_html_stylesheet();
         }
         else
         {
@@ -220,9 +228,49 @@ function is_js_in_html(js_file_name)
     return false;
 }
 
+function fix_displayable_html_stylesheet()
+{
+    if(!css_file)
+    {
+        return;
+    }
+    const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
+    if(stylesheets)
+    {
+        for(let i = 0; i < stylesheets.length; i++)
+        {
+            if(stylesheets[i].href.endsWith(css_file.name))
+            {
+                stylesheets[i].href = css_file.webkitRelativePath;
+            }
+        }
+    }
+}
+
+function is_css_in_html(css_file_name)
+{
+    if(!css_file_name)
+    {
+        return;
+    }
+    const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
+    if(stylesheets)
+    {
+        for(const stylesheet of stylesheets)
+        {
+            if(stylesheet.href.endsWith(css_file_name) )
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function update_iframe()
 {
     iframe.srcdoc = parsed_html.documentElement.outerHTML;
+    iframe.src = "";
 }
 
 function download(type)
@@ -232,6 +280,8 @@ function download(type)
         console.error("Error: html file is empty. Make sure to choose directory with html file");
         return;
     }
+    
+    
     if(type === "html")
     {
         var a = window.document.createElement("a");
@@ -250,14 +300,13 @@ function download(type)
     }
     else if(type === "css")
     {
-        
+        // TODO
     }
     else if(type === "js")
     {
         var a = window.document.createElement("a");
         a.style.display = 'none';
         
-        clean_script_path();
         a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/html"}));
         
         a.download = "script.js";

@@ -1,62 +1,6 @@
 body
 {
-    background-color: black;
+    background-color: pink;
     color: white;
     padding: 1em;
-}
-button
-{
-    color: white;
-    background: black;
-    border: 0.1em solid white;
-    transition: 0.2s;
-}
-button:hover
-{
-    
-    background: darkgray;
-    border: 0.1em solid white;
-    transition: 0.2s;
-}
-#title
-{
-    text-align: center;
-}
-.row
-{
-    display: flex;
-    justify-content: space-evenly;
-}
-.type_title
-{
-    text-align: center;
-}
-#middle
-{
-    height: 50em;
-}
-#add_element_menu
-{
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 20%;
-}
-#page
-{
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    width:50%;
-}
-#embed
-{
-    height: 70%;
-    background-color: white;
-}
-#structure
-{
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
 }
