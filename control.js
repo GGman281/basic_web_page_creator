@@ -6,10 +6,7 @@ let parsed_html;
 
 import_Folder.addEventListener("change", () =>
 {
-    if(import_Folder.files)
-    {
-        fetch_Folder()
-    }
+    fetch_Folder()
 });
 
 window.onload = function() {
@@ -22,9 +19,6 @@ async function _init_()
     iframe.removeAttribute("srcdoc");
     iframe.src = "default.html";
 }
-
-
-
 
 function check_html(html_text)
 {
@@ -45,34 +39,45 @@ function check_html(html_text)
     return document;
 }
 
-
-
 let html_file;
 let js_file;
 let css_file;
 async function fetch_Folder()
 {
-    let valid_file_amount;
+    html_file = undefined;
+    js_file = undefined;
+    css_file = undefined;
+    let duplicates = false;
+    
     for(const file of import_Folder.files)
     {
         if(file.name.endsWith(".html"))
         {
+            if(html_file)
+            {
+                duplicates = true;
+            }
             html_file = file;
-            valid_file_amount++;
-        }
-        else if(file.name.endsWith(".js"))
-        {
-            js_file = file;
-            valid_file_amount++;
         }
         else if(file.name.endsWith(".css"))
         {
+            if(css_file)
+            {
+                duplicates = true;
+            }
             css_file = file;
-            valid_file_amount++;
+        }
+        else if(file.name.endsWith(".js"))
+        {
+            if(js_file)
+            {
+                duplicates = true;
+            }
+            js_file = file;
         }
     }
     
-    if(valid_file_amount++ > 3)
+    if(duplicates)
     {
         alert("Warning! Too much files of type .js, .html or .css. Result may be undefined. \nPlease make sure there is exactly one of each");
         return;
@@ -131,7 +136,7 @@ async function fetch_Folder()
 function update_element_menu()
 {
     let element_list_node = document.getElementById("element_list");
-    
+    element_list_node.innerHTML = "";
     
     const head_li = document.createElement("li");
     head_li.textContent = "html"
@@ -176,16 +181,14 @@ function fix_displayable_html_scripts()
         return;
     }
     const scripts = parsed_html.scripts;
-    if(scripts)
+    for(let i = 0; i < scripts.length; i++)
     {
-        for(let i = 0; i < scripts.length; i++)
+        if(scripts[i].src.endsWith(js_file.name))
         {
-            if(scripts[i].src.endsWith(js_file.name))
-            {
-                parsed_html.scripts[i].src = js_file.webkitRelativePath;
-            }
+            parsed_html.scripts[i].src = js_file.webkitRelativePath;
         }
     }
+    
 }
 
 function clean_script_path()
@@ -196,18 +199,15 @@ function clean_script_path()
     }
     
     const scripts = parsed_html.scripts;
-    if(scripts)
+    for(let i = 0; i < scripts.length; i++)
     {
-        for(let i = 0; i < scripts.length; i++)
+        if(scripts[i].src.endsWith(js_file.webkitRelativePath))
         {
-            if(scripts[i].src.endsWith(js_file.webkitRelativePath))
-            {
-                parsed_html.scripts[i].src = js_file.name;
-            }
+            parsed_html.scripts[i].src = js_file.name;
         }
     }
+    
 }
-
 
 function clean_stylesheet_path()
 {
@@ -217,7 +217,7 @@ function clean_stylesheet_path()
     }
     
     const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
-    if(stylesheets)
+    if(stylesheets.length > 0)
     {
         for(let i = 0; i < stylesheets.length; i++)
         {
@@ -236,7 +236,7 @@ function is_js_in_html(js_file_name)
         return;
     }
     const scripts = parsed_html.scripts;
-    if(scripts)
+    if(scripts.length > 0)
     {
         for(const script of scripts)
         {
@@ -256,7 +256,7 @@ function fix_displayable_html_stylesheet()
         return;
     }
     const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
-    if(stylesheets)
+    if(stylesheets.length > 0)
     {
         for(let i = 0; i < stylesheets.length; i++)
         {
@@ -275,7 +275,7 @@ function is_css_in_html(css_file_name)
         return;
     }
     const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
-    if(stylesheets)
+    if(stylesheets.length > 0)
     {
         for(const stylesheet of stylesheets)
         {
@@ -291,7 +291,7 @@ function is_css_in_html(css_file_name)
 function update_iframe()
 {
     iframe.srcdoc = parsed_html.documentElement.outerHTML;
-    iframe.src = "";
+    iframe.removeAttribute("src");
 }
 
 function prompt_name()
@@ -308,6 +308,30 @@ function prompt_name()
     return name;
 }
 
+function export_file(file, blob, extension)
+{
+    var a = window.document.createElement("a");
+    a.style.display = 'none';        
+    const url = window.URL.createObjectURL(blob);
+    a.href = url;
+    
+    let filename = prompt_name();
+    if((filename === null || filename.length === 0)) 
+    {
+        a.download = file?.name || "index" + extension;
+    }
+    else
+    {
+        a.download = filename + extension;
+    } 
+    
+    document.body.appendChild(a);
+    a.click();
+    
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 function download(type)
 {
     if(!parsed_html)
@@ -319,71 +343,35 @@ function download(type)
     
     if(type === "html")
     {
-        var a = window.document.createElement("a");
-        a.style.display = 'none';
+       
         
         clean_script_path();
         clean_stylesheet_path();
-        a.href = window.URL.createObjectURL(new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"}));
+        
+        const blob = new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"});
         fix_displayable_html_scripts();
-        
-        let filename = prompt_name();
-        if((filename === null || filename.length === 0))
-        {
-            a.download = html_file.name;
-        }
-        else
-        {
-            a.download = filename + ".html";
-        }
-        
-        document.body.appendChild(a);
-        a.click();
-        
-        document.body.removeChild(a);
+        export_file(html_file, blob, ".html");
     }
     else if(type === "css")
     { 
-        var a = window.document.createElement("a");
-        a.style.display = 'none';
-        
-        a.href = window.URL.createObjectURL(new Blob([css_file], {type: "text/stylesheet"}));
-        
-        let filename = prompt_name();
-        if((filename === null || filename.length === 0))
+        if(!css_file)
         {
-            a.download = css_file.name;
-        }
-        else
-        {
-            a.download = filename + ".css";
+            console.error("Couldn't find css file");
+            return;
         }
         
-        document.body.appendChild(a);
-        a.click();
-        
-        document.body.removeChild(a);
+        const blob =new Blob([css_file], {type: "text/css"});
+        export_file(css_file, blob, ".css");
     }
     else if(type === "js")
     {
-        var a = window.document.createElement("a");
-        a.style.display = 'none';
-        
-        a.href = window.URL.createObjectURL(new Blob([js_file], {type: "text/javascript"}));
-        
-        let filename = prompt_name();
-        if((filename === null || filename.length === 0))
+        if(!js_file)
         {
-            a.download = js_file.name;
-        }
-        else
-        {
-            a.download = filename + ".js";
+            console.error("Couldn't find js file");
+            return;
         }
         
-        document.body.appendChild(a);
-        a.click();
-        
-        document.body.removeChild(a);
+        const blob = new Blob([js_file], {type: "text/javascript"});
+        export_file(js_file, blob, ".js");
     }
 }
