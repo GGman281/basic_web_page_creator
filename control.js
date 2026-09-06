@@ -1,7 +1,5 @@
-// get and fetch working directory
 const import_Folder = document.getElementById("folder");
 const iframe = document.getElementById("embed");
-
 let parsed_html;
 
 import_Folder.addEventListener("change", () =>
@@ -13,7 +11,7 @@ window.onload = function() {
   _init_();
 }; 
 
-async function _init_()
+function _init_()
 {
     iframe.srcdoc = "";
     iframe.removeAttribute("srcdoc");
@@ -105,9 +103,9 @@ async function fetch_Folder()
     if(js_file)
     {
         // check if javascript file is connected
-        if(is_js_in_html(js_file.name))
+        if(is_file_connected_property(js_file.name, parsed_html.scripts, "src"))
         {
-            fix_displayable_html_scripts();
+            change_html_file_path(parsed_html.scripts, "src",  js_file.name, js_file.webkitRelativePath);
         }
         else
         {
@@ -115,17 +113,16 @@ async function fetch_Folder()
         }
     }
     
-    
     if(css_file)
     {
         // check if stylesheet file is connected
-        if(is_css_in_html(css_file.name))
+        if(is_file_connected_property(css_file.name, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href"))
         {
-            fix_displayable_html_stylesheet();
+            change_html_file_path(parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", css_file.name, css_file.webkitRelativePath);
         }
         else
         {
-            console.log("Script is not connected");
+            console.log("Stylesheet is not connected");
         }
     }
     
@@ -155,7 +152,6 @@ function update_element_menu()
     element_list_node.appendChild(body_ul);
     print_element_menu(parsed_html.body, body_ul);
     
-    
 }
 
 function print_element_menu(from, element_list_node)
@@ -174,115 +170,29 @@ function print_element_menu(from, element_list_node)
     }
 }
 
-function fix_displayable_html_scripts()
-{
-    if(!js_file)
+function change_html_file_path(array_of_files, property, from, to)
+{    
+    for(let i = 0; i < array_of_files.length; i++)
     {
-        return;
-    }
-    const scripts = parsed_html.scripts;
-    for(let i = 0; i < scripts.length; i++)
-    {
-        if(scripts[i].src.endsWith(js_file.name))
+        if(array_of_files[i][property].endsWith(from))
         {
-            parsed_html.scripts[i].src = js_file.webkitRelativePath;
+            array_of_files[i][property] = to;
         }
+    }
+}
+
+function is_file_connected_property(file_name, array_of_files, property)
+{
+    if(!file_name)
+    {
+        return false;
     }
     
-}
-
-function clean_script_path()
-{
-    if(!js_file)
+    for(const file of array_of_files)
     {
-        return;
-    }
-    
-    const scripts = parsed_html.scripts;
-    for(let i = 0; i < scripts.length; i++)
-    {
-        if(scripts[i].src.endsWith(js_file.webkitRelativePath))
+        if(file[property].endsWith(file_name))
         {
-            parsed_html.scripts[i].src = js_file.name;
-        }
-    }
-    
-}
-
-function clean_stylesheet_path()
-{
-    if(!css_file)
-    {
-        return;
-    }
-    
-    const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
-    if(stylesheets.length > 0)
-    {
-        for(let i = 0; i < stylesheets.length; i++)
-        {
-            if(stylesheets[i].href.endsWith(css_file.webkitRelativePath))
-            {
-                stylesheets[i].href = css_file.name;
-            }
-        }
-    }
-}
-
-function is_js_in_html(js_file_name)
-{
-    if(!js_file_name)
-    {
-        return;
-    }
-    const scripts = parsed_html.scripts;
-    if(scripts.length > 0)
-    {
-        for(const script of scripts)
-        {
-            if(script.src.endsWith(js_file_name) )
-            {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-function fix_displayable_html_stylesheet()
-{
-    if(!css_file)
-    {
-        return;
-    }
-    const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
-    if(stylesheets.length > 0)
-    {
-        for(let i = 0; i < stylesheets.length; i++)
-        {
-            if(stylesheets[i].href.endsWith(css_file.name))
-            {
-                stylesheets[i].href = css_file.webkitRelativePath;
-            }
-        }
-    }
-}
-
-function is_css_in_html(css_file_name)
-{
-    if(!css_file_name)
-    {
-        return;
-    }
-    const stylesheets = parsed_html.querySelectorAll('link[rel="stylesheet"]');
-    if(stylesheets.length > 0)
-    {
-        for(const stylesheet of stylesheets)
-        {
-            if(stylesheet.href.endsWith(css_file_name) )
-            {
-                return true;
-            }
+            return true;
         }
     }
     return false;
@@ -310,13 +220,13 @@ function prompt_name()
 
 function export_file(file, blob, extension)
 {
-    var a = window.document.createElement("a");
+    const a = document.createElement("a");
     a.style.display = 'none';        
     const url = window.URL.createObjectURL(blob);
     a.href = url;
     
     let filename = prompt_name();
-    if((filename === null || filename.length === 0)) 
+    if(filename === null || filename.length === 0)
     {
         a.download = file?.name || "index" + extension;
     }
@@ -343,14 +253,15 @@ function download(type)
     
     if(type === "html")
     {
-       
-        
-        clean_script_path();
-        clean_stylesheet_path();
+        change_html_file_path(parsed_html.scripts, "src", js_file.webkitRelativePath,  js_file.name);
+        change_html_file_path(parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", css_file.webkitRelativePath, css_file.name);
         
         const blob = new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"});
-        fix_displayable_html_scripts();
         export_file(html_file, blob, ".html");
+        
+        change_html_file_path(parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", css_file.name, css_file.webkitRelativePath);
+        change_html_file_path(parsed_html.scripts, "src",  js_file.name, js_file.webkitRelativePath);
+        update_iframe();
     }
     else if(type === "css")
     { 
@@ -360,7 +271,7 @@ function download(type)
             return;
         }
         
-        const blob =new Blob([css_file], {type: "text/css"});
+        const blob = new Blob([css_file], {type: "text/css"});
         export_file(css_file, blob, ".css");
     }
     else if(type === "js")
