@@ -1,5 +1,7 @@
+// get and fetch working directory
 const import_Folder = document.getElementById("folder");
 const iframe = document.getElementById("embed");
+
 let parsed_html;
 
 import_Folder.addEventListener("change", () =>
@@ -105,7 +107,7 @@ async function fetch_Folder()
         // check if javascript file is connected
         if(is_file_connected_property(js_file.name, parsed_html.scripts, "src"))
         {
-            change_html_file_path(parsed_html.scripts, "src",  js_file.name, js_file.webkitRelativePath);
+            change_html_file_path(js_file, parsed_html.scripts, "src",  "name", "webkitRelativePath");
         }
         else
         {
@@ -113,12 +115,13 @@ async function fetch_Folder()
         }
     }
     
+    
     if(css_file)
     {
         // check if stylesheet file is connected
         if(is_file_connected_property(css_file.name, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href"))
         {
-            change_html_file_path(parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", css_file.name, css_file.webkitRelativePath);
+            change_html_file_path(css_file, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
         }
         else
         {
@@ -128,6 +131,21 @@ async function fetch_Folder()
     
     update_element_menu();
     update_iframe();
+}
+
+function change_html_file_path(file, array_of_files, property, from_property, to_property)
+{    
+    if(!file)
+    {
+        return;
+    }
+    for(let i = 0; i < array_of_files.length; i++)
+    {
+        if(array_of_files[i][property].endsWith(file[from_property]))
+        {
+            array_of_files[i][property] = file[to_property];
+        }
+    }
 }
 
 function update_element_menu()
@@ -170,16 +188,6 @@ function print_element_menu(from, element_list_node)
     }
 }
 
-function change_html_file_path(array_of_files, property, from, to)
-{    
-    for(let i = 0; i < array_of_files.length; i++)
-    {
-        if(array_of_files[i][property].endsWith(from))
-        {
-            array_of_files[i][property] = to;
-        }
-    }
-}
 
 function is_file_connected_property(file_name, array_of_files, property)
 {
@@ -253,14 +261,14 @@ function download(type)
     
     if(type === "html")
     {
-        change_html_file_path(parsed_html.scripts, "src", js_file.webkitRelativePath,  js_file.name);
-        change_html_file_path(parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", css_file.webkitRelativePath, css_file.name);
+        change_html_file_path(js_file, parsed_html.scripts, "src", "webkitRelativePath",  "name");
+        change_html_file_path(css_file, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "webkitRelativePath", "name");
         
         const blob = new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"});
         export_file(html_file, blob, ".html");
         
-        change_html_file_path(parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", css_file.name, css_file.webkitRelativePath);
-        change_html_file_path(parsed_html.scripts, "src",  js_file.name, js_file.webkitRelativePath);
+        change_html_file_path(css_file, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
+        change_html_file_path(js_file, parsed_html.scripts, "src",  "name", "webkitRelativePath");
         update_iframe();
     }
     else if(type === "css")
