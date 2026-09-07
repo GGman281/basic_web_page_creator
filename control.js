@@ -206,11 +206,33 @@ function is_file_connected_property(file_name, array_of_files, property)
     return false;
 }
 
-function update_iframe()
+let zoom = 1;
+function update_iframe(scale)
 {
+    if(scale)
+    {
+        zoom += scale;
+        if(zoom < 0.5)
+        {
+            zoom = 0.5;
+            return;
+        }
+        const canvas = document.getElementById("canvas");
+        canvas.style.width = `${iframe.offsetWidth * zoom}px`;
+        canvas.style.height = `${iframe.offsetHeight * zoom}px`;
+        iframe.style.transformOrigin = "top left";
+        
+        iframe.style.transform = `scale(${zoom})`;
+        iframe.style.width = `${100 * zoom}vw`;
+        iframe.style.height = `${100 * zoom}vh`;
+        document.getElementById("zoom_percentage").innerHTML = (100*zoom).toFixed(0) + "%"
+        return;
+    }
     iframe.srcdoc = parsed_html.documentElement.outerHTML;
     iframe.removeAttribute("src");
 }
+
+
 
 function prompt_name()
 {

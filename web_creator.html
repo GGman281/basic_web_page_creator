@@ -38,7 +38,16 @@
 				<div>
 					<h2 class="type_title">Page preview</h2>
 				</div>
-				<iframe src="" id="embed"></iframe>
+				<div>
+					<button onclick="update_iframe(0.1)">zoom in</button>
+					<span id="zoom_percentage">100%</span>
+					<button onclick="update_iframe(-0.1)">zoom out</button>
+				</div>
+				<div id="wrap">
+					<div id="canvas">
+						<iframe src="" id="embed"></iframe>
+					</div>
+				</div>
 			</div>
 			
 			<div id="structure">
