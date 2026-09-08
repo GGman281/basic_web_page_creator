@@ -172,12 +172,24 @@ function update_element_menu()
     
 }
 
+
+let selected_element;
 function print_element_menu(from, element_list_node)
 {
     for(const element of from.children)
     {
         const li = document.createElement("li");
         li.textContent = element.tagName.toLowerCase();
+        li.addEventListener("click", function()
+        {
+            if(selected_element)
+            {
+                selected_element.classList.remove("selected");
+            }
+
+            li.classList.add("selected");
+            selected_element = li;
+        });
         element_list_node.appendChild(li);
         if(element.children.length > 0)
         {

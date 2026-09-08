@@ -83,3 +83,8 @@ button:hover
     width: 60em;
     border-radius: 1em;
 }
+.selected
+{
+    background-color:white;
+    color:black;
+}
