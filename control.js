@@ -210,6 +210,7 @@ function print_element_menu(from, element_list_node)
     {
         const li = document.createElement("li");
         li.textContent = element.tagName.toLowerCase();
+        li.element = element;
         li.addEventListener("click", function()
         {
             if(selected_element)
@@ -288,6 +289,28 @@ function prompt_name()
         }
     }
     return name;
+}
+
+function add_element_as(level)
+{
+    if(!selected_element)
+    {
+        console.error("Please select the element on the right list first")
+        return;
+    }
+    const element_select = document.getElementById("elements");
+    const element = parsed_html.createElement(element_select.value);
+    if(level == "parent")
+    {
+        selected_element.element.parentElement.appendChild(element);
+    }
+    else if(level == "child")
+    {
+        selected_element.element.appendChild(element);
+    }
+    
+    update_element_menu();
+    update_iframe();
 }
 
 function export_file(file, blob, extension)
