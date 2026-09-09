@@ -1,7 +1,28 @@
 // get and fetch working directory
 const import_Folder = document.getElementById("folder");
 const iframe = document.getElementById("embed");
-
+const elements = [
+    "div",
+    "p",
+    "span",
+    "h1",
+    "h2",
+    "h3",
+    "a",
+    "img",
+    "button",
+    "input",
+    "textarea",
+    "ul",
+    "ol",
+    "li",
+    "table",
+    "section",
+    "article",
+    "header",
+    "footer",
+    "nav"
+];
 let parsed_html;
 
 import_Folder.addEventListener("change", () =>
@@ -18,6 +39,15 @@ function _init_()
     iframe.srcdoc = "";
     iframe.removeAttribute("srcdoc");
     iframe.src = "default.html";
+    const element_select = document.getElementById("elements");
+    for(const element of elements)
+    {
+        const option = document.createElement("option");
+        option.value = element;
+        option.textContent = element;
+
+        element_select.appendChild(option);
+    }
 }
 
 function check_html(html_text)
