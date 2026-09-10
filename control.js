@@ -250,6 +250,8 @@ function is_file_connected_property(file_name, array_of_files, property)
 }
 
 let zoom = 1;
+const iframe_width = iframe.offsetWidth;
+const iframe_height = iframe.offsetHeight;
 function update_iframe(scale)
 {
     if(scale)
@@ -266,9 +268,8 @@ function update_iframe(scale)
         iframe.style.transformOrigin = "top left";
         
         iframe.style.transform = `scale(${zoom})`;
-        iframe.style.width = `${100 * zoom}vw`;
-        iframe.style.height = `${100 * zoom}vh`;
-        document.getElementById("zoom_percentage").innerHTML = (100*zoom).toFixed(0) + "%"
+        
+        document.getElementById("zoom_percentage").innerHTML = (100 * zoom).toFixed(0) + "%"
         return;
     }
     iframe.srcdoc = parsed_html.documentElement.outerHTML;
