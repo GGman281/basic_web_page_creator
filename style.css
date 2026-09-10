@@ -10,6 +10,7 @@ button
     background: black;
     border: 0.1em solid white;
     transition: 0.2s;
+    border-radius: 0.5em;
 }
 button:hover
 {
@@ -41,6 +42,15 @@ button:hover
     flex-direction: column;
     justify-content: start;
     width: 20%;
+}
+#add_element_menu div
+{
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+#add_element_menu select
+{
+    width: 90%;
 }
 #page
 {
