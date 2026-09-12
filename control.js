@@ -237,29 +237,45 @@ function print_element_menu(from, element_list_node)
 
 function get_element_connections(from)
 {
-    let styles = "";
+    let connections = "";
     if(from.className || from.id)
     {
-        styles += " ";
-        styles += "<font color='yellow'>[Styles: ";
-        styles += from.className + " " + from.id;
-        styles += "]</font>";
+        connections += " ";
+        connections += "<font color='yellow'>[Styles: ";
+        connections += from.className + " " + from.id;
+        connections += "]</font>";
     }
     if(from.attributes.onclick)
     {
-        styles += " ";
-        styles += "<font color='orange'>[on click: ";
-        styles += from.attributes.onclick.value;
-        styles += "]</font>";
+        connections += " ";
+        connections += "<font color='orange'>";
+        if(from.attributes.onclick.value.length > 0)
+        {
+            connections += "[on click: ";
+            connections += from.attributes.onclick.value;
+        }
+        else
+        {
+            connections += "[empty on click";
+        }
+        connections += "]</font>";
     }
     if(from.attributes.onblur)
     {
-        styles += " ";
-        styles += "<font color='orange'>[on blur: ";
-        styles += from.attributes.onblur.value;
-        styles += "]</font>";
+        connections += " ";
+        connections += "<font color='orange'>";
+        if(from.attributes.onblur.value.length > 0)
+        {
+            connections += "[on blur: ";
+            connections += from.attributes.onblur.value;
+        }
+        else
+        {
+            connections += "[empty on blur";
+        }
+        connections += "]</font>";
     }
-    return styles;
+    return connections;
 }
 
 function is_file_connected_property(file_name, array_of_files, property)
