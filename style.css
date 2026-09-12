@@ -34,7 +34,7 @@ button:hover
 #middle
 {
     justify-content: space-between;
-    height: 40em;
+    height: 38em;
 }
 #add_element_menu
 {
@@ -70,7 +70,7 @@ button:hover
 {
     overflow:auto;
     width: 50vw;
-    height: 80vh;
+    height: 70vh;
 }
 #canvas
 {
@@ -101,5 +101,9 @@ button:hover
 .selected
 {
     background-color:white;
+    color:black;
+}
+.selected font
+{
     color:black;
 }

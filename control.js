@@ -210,6 +210,7 @@ function print_element_menu(from, element_list_node)
     {
         const li = document.createElement("li");
         li.textContent = element.tagName.toLowerCase();
+        
         li.element = element;
         li.addEventListener("click", function()
         {
@@ -221,6 +222,9 @@ function print_element_menu(from, element_list_node)
             li.classList.add("selected");
             selected_element = li;
         });
+        
+        li.innerHTML += get_element_connections(element);
+        
         element_list_node.appendChild(li);
         if(element.children.length > 0)
         {
@@ -231,6 +235,32 @@ function print_element_menu(from, element_list_node)
     }
 }
 
+function get_element_connections(from)
+{
+    let styles = "";
+    if(from.className || from.id)
+    {
+        styles += " ";
+        styles += "<font color='yellow'>[Styles: ";
+        styles += from.className + " " + from.id;
+        styles += "]</font>";
+    }
+    if(from.attributes.onclick)
+    {
+        styles += " ";
+        styles += "<font color='orange'>[on click: ";
+        styles += from.attributes.onclick.value;
+        styles += "]</font>";
+    }
+    if(from.attributes.onblur)
+    {
+        styles += " ";
+        styles += "<font color='orange'>[on blur: ";
+        styles += from.attributes.onblur.value;
+        styles += "]</font>";
+    }
+    return styles;
+}
 
 function is_file_connected_property(file_name, array_of_files, property)
 {
