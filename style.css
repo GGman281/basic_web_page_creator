@@ -31,11 +31,12 @@ button:hover
 {
     text-align: center;
 }
+
 #middle
 {
     justify-content: space-between;
-    height: 38em;
 }
+
 #add_element_menu
 {
     display:flex;
@@ -52,30 +53,41 @@ button:hover
 {
     width: 90%;
 }
+
 #page
 {
     display:flex;
     flex-direction: column;
     justify-content: start;
     width:fit-content;
+    height: fit-content;
 }
-#embed
-{
-    height: 100vh;
-    width: 100vw;
-    border: 2vh dashed gray;
-    box-sizing: border-box;
-}
+
+/* Iframe propper display */
 #wrap
 {
     overflow:auto;
-    width: 60vw;
-    height: 60vh;
+    width: 50vw;
+    height: 50vh;
 }
 #canvas
 {
     overflow:hidden;
 }
+#embed
+{
+    height: 100vh;
+    width: 100vw;
+    border: 1em dashed gray;
+    box-sizing: border-box;
+}
+/* -------------- */
+
+#choices
+{
+    height: 2em;    
+}
+
 #structure
 {
     display:flex;
@@ -88,14 +100,14 @@ button:hover
     display:flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: start;
 }
 #export button
 {
-    margin-top: 1em;
-    padding-top: 1em;
-    padding-bottom: 1em;
-    width: 60em;
+    margin-top: 1%;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    width: 40em;
     border-radius: 1em;
 }
 .selected

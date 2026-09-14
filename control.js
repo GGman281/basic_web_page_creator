@@ -48,6 +48,8 @@ function _init_()
 
         element_select.appendChild(option);
     }
+    update_iframe(0.1);
+    update_iframe(-0.1);
 }
 
 function check_html(html_text)
