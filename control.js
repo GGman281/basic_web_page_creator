@@ -127,6 +127,8 @@ async function fetch_Folder()
     change_html_file_path(js_files, parsed_html.scripts, "src",  "name", "webkitRelativePath");
     change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
     
+    // todo: add choice of html pages
+    
     update_element_menu();
     update_iframe();
 }
@@ -305,8 +307,8 @@ function prompt_name()
     let name = prompt("Put file name here: ");
     if(name === null || name.length === 0)
     {
-        let repeat = confirm("Warning: input field is empty or user cancelled. \nConfirm to repeat the process");
-        while(repeat && (name === null || name.length === 0))
+        let repeat = confirm("Warning: input field is empty or user cancelled. \nFile name remain the same.");
+        while(!repeat && (name === null || name.length === 0))
         {
             name = prompt("Put file name here: ");
         }
@@ -360,6 +362,21 @@ function export_file(file, blob, extension)
     URL.revokeObjectURL(url);
 }
 
+function prompt_file_choice(file_array)
+{
+    let message = "Please choose file: \n";
+    for(let i = 0; i < file_array.length; i++)
+    {
+        message += i + ") " + file_array[i].name + "\n";
+    }
+    let choice
+    do
+    {
+        choice = prompt(message);    
+    }while(choice < 0 || choice > file_array.length - 1);
+    return file_array[choice];
+}
+
 function download(type)
 {
     if(!parsed_html)
@@ -367,7 +384,6 @@ function download(type)
         console.error("Error: html file is empty. Make sure to choose directory with html file");
         return;
     }
-    
     
     if(type === "html")
     {
@@ -382,7 +398,6 @@ function download(type)
         
         update_iframe();
     }
-    // TODO: add multiple css/js file export support
     else if(type === "css")
     { 
         let css_file;
@@ -394,6 +409,10 @@ function download(type)
         if(css_files.length == 1)
         {
             css_file = css_files[0];
+        }
+        else
+        {
+            css_file = prompt_file_choice(css_files);
         }
         
         const blob = new Blob([css_file], {type: "text/css"});
@@ -411,6 +430,12 @@ function download(type)
         {
             js_file = jsfiles[0];
         }
+        else
+        {
+            js_file = prompt_file_choice(js_files);
+        }
+        
+        
         const blob = new Blob([js_file], {type: "text/javascript"});
         export_file(js_file, blob, ".js");
     }
