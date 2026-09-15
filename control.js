@@ -147,7 +147,6 @@ function add_button()
 function choose_html(index)
 {
     selected_element = undefined;
-    console.log("chose html button clicked")
     parsed_html = parsed_html_files[index];
     update_element_menu();
     update_iframe();
@@ -411,7 +410,16 @@ function download(type)
         change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "webkitRelativePath", "name");
         
         const blob = new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"});
-        export_file(html_files, blob, ".html"); // todo: support for multiple html file export
+        let html_file;
+        if(html_files.length == 1)
+        {
+            html_file = html_files[0];
+        }
+        else
+        {
+            html_file = prompt_file_choice(html_files);
+        }
+        export_file(html_file, blob, ".html");
         
         change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
         change_html_file_path(js_files, parsed_html.scripts, "src",  "name", "webkitRelativePath");
