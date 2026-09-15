@@ -23,6 +23,7 @@ const elements = [
     "footer",
     "nav"
 ];
+let parsed_html_files = new Array;
 let parsed_html;
 
 import_Folder.addEventListener("change", () =>
@@ -71,7 +72,7 @@ function check_html(html_text)
     return document;
 }
 
-let html_file;
+let html_files = new Array;
 let js_files = new Array;
 let css_files = new Array;
 async function fetch_Folder()
@@ -82,11 +83,7 @@ async function fetch_Folder()
     {
         if(file.name.endsWith(".html"))
         {
-            if(html_file)
-            {
-                duplicates = true;
-            }
-            html_file = file;
+            html_files.push(file);
         }
         else if(file.name.endsWith(".css"))
         {
@@ -98,14 +95,8 @@ async function fetch_Folder()
         }
     }
     
-    if(duplicates)
-    {
-        alert("Warning! Too much files of type .js, .html or .css. Result may be undefined. \nPlease make sure there is exactly one of each");
-        return;
-    }
-    
     let html_text;
-    if(!html_file)
+    if(!html_files)
     {
         html_text = 
         "<!DOCTYPE HTML>\n" +
@@ -119,16 +110,45 @@ async function fetch_Folder()
     }
     else
     {
-        html_text = await html_file.text();
+        for(html_file of html_files)
+        {
+            html_text = await html_file.text();
+            parsed_html_files.push(check_html(html_text))
+        }
     }
-    parsed_html = check_html(html_text);
     
+    for(parsed_html_file of parsed_html_files)
+    {
+        parsed_html = parsed_html_file
+        change_html_file_path(js_files, parsed_html.scripts, "src",  "name", "webkitRelativePath");
+        change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
+    }
     
-    change_html_file_path(js_files, parsed_html.scripts, "src",  "name", "webkitRelativePath");
-    change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
+    parsed_html = parsed_html_files[0];
     
-    // todo: add choice of html pages
+    add_button();
     
+    update_element_menu();
+    update_iframe();
+}
+
+function add_button()
+{
+    const menu = document.getElementById("choices");
+    for(let i = 0; i < parsed_html_files.length; i++)
+    {
+        const button = document.createElement("button");
+        button.innerHTML = html_files[i].name;
+        button.onclick = function() {choose_html(i)};
+        menu.appendChild(button);
+    }
+}
+
+function choose_html(index)
+{
+    selected_element = undefined;
+    console.log("chose html button clicked")
+    parsed_html = parsed_html_files[index];
     update_element_menu();
     update_iframe();
 }
@@ -391,7 +411,7 @@ function download(type)
         change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "webkitRelativePath", "name");
         
         const blob = new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"});
-        export_file(html_file, blob, ".html");
+        export_file(html_files, blob, ".html"); // todo: support for multiple html file export
         
         change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
         change_html_file_path(js_files, parsed_html.scripts, "src",  "name", "webkitRelativePath");
@@ -440,3 +460,5 @@ function download(type)
         export_file(js_file, blob, ".js");
     }
 }
+
+//todo: export all files option
