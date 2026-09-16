@@ -23,7 +23,7 @@ const elements = [
     "footer",
     "nav"
 ];
-let parsed_html_files = new Array;
+let parsed_html_files;
 let parsed_html;
 
 import_Folder.addEventListener("change", () =>
@@ -72,12 +72,15 @@ function check_html(html_text)
     return document;
 }
 
-let html_files = new Array;
-let js_files = new Array;
-let css_files = new Array;
+let html_files;
+let js_files;
+let css_files;
 async function fetch_Folder()
 {
-    let duplicates = false;
+    html_files = new Array;
+    js_files = new Array;
+    css_files = new Array;
+    parsed_html_files = new Array;
     
     for(const file of import_Folder.files)
     {
@@ -96,7 +99,7 @@ async function fetch_Folder()
     }
     
     let html_text;
-    if(!html_files)
+    if(html_files.length === 0)
     {
         html_text = 
         "<!DOCTYPE HTML>\n" +
