@@ -110,19 +110,20 @@ async function fetch_Folder()
         "       Empty project. Brand new beginning :)" +        
         "   </body>\n" +        
         "</html>\n";
+        parsed_html_files.push(check_html(html_text))
     }
     else
     {
-        for(html_file of html_files)
+        for(const html_file of html_files)
         {
             html_text = await html_file.text();
             parsed_html_files.push(check_html(html_text))
         }
     }
     
-    for(parsed_html_file of parsed_html_files)
+    for(const parsed_html_file of parsed_html_files)
     {
-        parsed_html = parsed_html_file
+        parsed_html = parsed_html_file;
         change_html_file_path(js_files, parsed_html.scripts, "src",  "name", "webkitRelativePath");
         change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
     }
@@ -138,6 +139,14 @@ async function fetch_Folder()
 function add_button()
 {
     const menu = document.getElementById("choices");
+    menu.innerHTML = "";
+    if(html_files.length === 0)
+    {
+        const button = document.createElement("button");
+        button.innerHTML = "index.html";
+        button.onclick = function() {choose_html(i)};
+        menu.appendChild(button);
+    }
     for(let i = 0; i < parsed_html_files.length; i++)
     {
         const button = document.createElement("button");
@@ -161,7 +170,7 @@ function change_html_file_path(file_array, array_of_files, property, from_proper
     {
         return;
     }
-    for(file of file_array)
+    for(const file of file_array)
     {
         if(!is_file_connected_property(file.name, array_of_files, property))
         {
@@ -395,17 +404,13 @@ function prompt_file_choice(file_array)
     do
     {
         choice = prompt(message);    
-    }while(choice < 0 || choice > file_array.length - 1);
+    }while(choice < 0 || choice > file_array.length - 1 || isNaN(choice));
     return file_array[choice];
 }
 
 function download(type)
 {
-    if(!parsed_html)
-    {
-        console.error("Error: html file is empty. Make sure to choose directory with html file");
-        return;
-    }
+    
     
     if(type === "html")
     {
@@ -414,7 +419,11 @@ function download(type)
         
         const blob = new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"});
         let html_file;
-        if(html_files.length == 1)
+        if(html_files.length === 0)
+        {
+            console.log("No html file found in folder. Using default template");
+        }
+        else if(html_files.length == 1)
         {
             html_file = html_files[0];
         }
@@ -432,7 +441,7 @@ function download(type)
     else if(type === "css")
     { 
         let css_file;
-        if(!css_files)
+        if(css_files.length === 0)
         {
             console.error("Couldn't find css file");
             return;
@@ -452,14 +461,14 @@ function download(type)
     else if(type === "js")
     {
         let js_file;
-        if(!js_files)
+        if(js_files.length === 0)
         {
             console.error("Couldn't find js file");
             return;
         }
         if(js_files.length == 1)
         {
-            js_file = jsfiles[0];
+            js_file = js_files[0];
         }
         else
         {
