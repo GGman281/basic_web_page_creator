@@ -73,6 +73,7 @@ hr
     overflow:auto;
     width: 50vw;
     height: 50vh;
+    background-color:white;
 }
 #canvas
 {

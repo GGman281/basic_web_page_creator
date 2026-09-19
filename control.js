@@ -25,6 +25,8 @@ const elements = [
 ];
 let parsed_html_files;
 let parsed_html;
+let parsed_body;
+
 
 import_Folder.addEventListener("change", () =>
 {
@@ -129,14 +131,15 @@ async function fetch_Folder()
     }
     
     parsed_html = parsed_html_files[0];
+    parsed_body = parsed_html_files[0].body;
     
-    add_button();
+    add_buttons();
     
     update_element_menu();
     update_iframe();
 }
 
-function add_button()
+function add_buttons()
 {
     const menu = document.getElementById("choices");
     menu.innerHTML = "";
@@ -146,6 +149,7 @@ function add_button()
         button.innerHTML = "index.html";
         button.onclick = function() {choose_html(i)};
         menu.appendChild(button);
+        return;
     }
     for(let i = 0; i < parsed_html_files.length; i++)
     {
@@ -160,6 +164,7 @@ function choose_html(index)
 {
     selected_element = undefined;
     parsed_html = parsed_html_files[index];
+    parsed_body = parsed_html_files[index].body;
     update_element_menu();
     update_iframe();
 }
@@ -203,6 +208,18 @@ function update_element_menu()
     
     const body_li = document.createElement("li");
     body_li.textContent = "body"
+    body_li.element = parsed_html.body;
+    body_li.addEventListener("click", function()
+    {
+        if(selected_element)
+        {
+            selected_element.classList.remove("selected");
+        }
+        document.getElementById("add_as_parent_button").disabled = true;
+        body_li.classList.add("selected");
+        selected_element = body_li;
+        console.log(selected_element);
+    });
     element_list_node.appendChild(body_li);
     
     const body_ul = document.createElement("ul");
@@ -228,6 +245,7 @@ function print_element_menu(from, element_list_node)
                 selected_element.classList.remove("selected");
             }
 
+            document.getElementById("add_as_parent_button").disabled = false;
             li.classList.add("selected");
             selected_element = li;
         });
@@ -305,8 +323,6 @@ function is_file_connected_property(file_name, array_of_files, property)
 }
 
 let zoom = 1;
-const iframe_width = iframe.offsetWidth;
-const iframe_height = iframe.offsetHeight;
 function update_iframe(scale)
 {
     if(scale)
@@ -407,6 +423,8 @@ function prompt_file_choice(file_array)
     }while(choice < 0 || choice > file_array.length - 1 || isNaN(choice));
     return file_array[choice];
 }
+
+
 
 function download(type)
 {
