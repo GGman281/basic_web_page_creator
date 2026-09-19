@@ -23,6 +23,19 @@ const elements = [
     "footer",
     "nav"
 ];
+const css_rules = [
+    "background-color",
+    "font-size",
+    "font-family",
+    "width",
+    "height",
+    "color",
+    "border",
+    "border-color",
+    "padding",
+    "margin",
+    "transition",
+]
 let parsed_html_files;
 let parsed_html;
 let parsed_body;
@@ -42,6 +55,8 @@ function _init_()
     iframe.srcdoc = "";
     iframe.removeAttribute("srcdoc");
     iframe.src = "default.html";
+    
+    // Options for elements list
     const element_select = document.getElementById("elements");
     for(const element of elements)
     {
@@ -51,6 +66,19 @@ function _init_()
 
         element_select.appendChild(option);
     }
+    
+    // Options for CSS rulesconst element_select = document.getElementById("elements");
+    const css_rule_select = document.getElementById("css_rules");
+    for(const rule of css_rules)
+    {
+        const option = document.createElement("option");
+        option.value = rule;
+        option.textContent = rule;
+
+        css_rule_select.appendChild(option);
+    }
+    
+    
     update_iframe(0.1);
     update_iframe(-0.1);
 }

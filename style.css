@@ -7,7 +7,7 @@ body
 button
 {
     color: white;
-    background: black;
+    background-color: black;
     border: 0.1em solid white;
     transition: 0.2s;
     border-radius: 0.5em;
@@ -56,7 +56,9 @@ hr
 #add_element_menu select
 {
     width: 90%;
+    
 }
+
 #add_as_current_button:disabled
 {
     color:gray;
