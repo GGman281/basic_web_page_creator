@@ -57,6 +57,12 @@ hr
 {
     width: 90%;
 }
+#add_as_current_button:disabled
+{
+    color:gray;
+    border-color: gray;
+    background-color: black;
+}
 
 #page
 {

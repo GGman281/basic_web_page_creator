@@ -215,7 +215,7 @@ function update_element_menu()
         {
             selected_element.classList.remove("selected");
         }
-        document.getElementById("add_as_parent_button").disabled = true;
+        document.getElementById("add_as_current_button").disabled = true;
         body_li.classList.add("selected");
         selected_element = body_li;
         console.log(selected_element);
@@ -245,7 +245,7 @@ function print_element_menu(from, element_list_node)
                 selected_element.classList.remove("selected");
             }
 
-            document.getElementById("add_as_parent_button").disabled = false;
+            document.getElementById("add_as_current_button").disabled = false;
             li.classList.add("selected");
             selected_element = li;
         });
