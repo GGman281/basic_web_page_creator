@@ -23,19 +23,36 @@ const elements = [
     "footer",
     "nav"
 ];
+
+/*
+css rule:
+    rule - name of the rule in css
+    description - description of the rule
+    accepts - what the rule accepts as valid parameters
+        name - displayable name of the property (can be anything)
+        type - input type
+*/
 const css_rules = [
-    "background-color",
-    "font-size",
-    "font-family",
-    "width",
-    "height",
-    "color",
-    "border",
-    "border-color",
-    "padding",
-    "margin",
-    "transition",
-]
+    {rule:"background-color", description: "Changes background colour", accepts:[{name:"Colour", type:"color"}]},
+    {rule:"font-size", description: "Changes font size", accepts:[{name:"Font size", type:"number"}, {type:"unit"}]},
+    {rule:"font-family", description: "Changes font", accepts:[{name:"Font name", type:"text"}]},
+    {rule:"width", description: "Changes width", accepts:[{name:"Amount", type:"number"}, {type:"unit"}]},
+    {rule:"height", description: "Changes height", accepts:[{name:"Amount", type:"number"}, {type:"unit"}]},
+    {rule:"color", description: "Changes colour of the font", accepts:[{name:"Colour", type:"color"}]},
+    {rule:"border", description: "Changes border properties", accepts:[{name:"Width", type:"number"}, {type:"unit"}, {name:"Border type", type:"border_type"}, {name:"Colour", type:"color"}]},
+    {rule:"padding", description: "Changes space around an element's content <b>inside<b> the element", accepts:[
+        {name:"Top", type:"number"},{type:"unit"}, 
+        {name:"Bottom", type:"number"}, {type:"unit"},
+        {name:"Left", type:"number"}, {type:"unit"},
+        {name:"Right", type:"number"}, {type:"unit"}]},
+    {rule:"margin", description: "Changes space around an element's content <b>outside<b> the element", accepts:[
+        {name:"Top", type:"number"},{type:"unit"}, 
+        {name:"Bottom", type:"number"}, {type:"unit"},
+        {name:"Left", type:"number"}, {type:"unit"},
+        {name:"Right", type:"number"}, {type:"unit"}]},
+    {rule:"transition", description: "Makes a transition between styles smooth within given time span", accepts:[{name:"Time", type:"number"}]}
+];
+let selected_rule = css_rules[0];
 let parsed_html_files;
 let parsed_html;
 let parsed_body;
@@ -67,20 +84,49 @@ function _init_()
         element_select.appendChild(option);
     }
     
-    // Options for CSS rulesconst element_select = document.getElementById("elements");
+    
     const css_rule_select = document.getElementById("css_rules");
+    css_rule_select.onchange = function(event)
+    {
+        rule_property_update(event);
+    }
+    
+    // Options for CSS rules
     for(const rule of css_rules)
     {
         const option = document.createElement("option");
-        option.value = rule;
-        option.textContent = rule;
+        option.value = rule.rule;
+        option.textContent = rule.rule;
+        option.rule = rule;
 
         css_rule_select.appendChild(option);
     }
     
+    rule_property_update();
     
+    //TODO: fix bottom scrollbar not showing unless zooming was used
     update_iframe(0.1);
     update_iframe(-0.1);
+}
+
+function rule_property_update(event)
+{   
+    const rule_control = document.getElementById("css_rule_control");
+    let rule_control_inner_html;
+    if(!event)
+    {
+        rule_control.innerHTML = selected_rule.description;
+        return;
+    }
+    selected_rule = event.target.selectedOptions[0].rule;
+    rule_control_inner_html = selected_rule.description;
+    rule_control.innerHTML = rule_control_inner_html;
+    
+}
+
+function generate_property_field_change()
+{
+    // To be done
 }
 
 function check_html(html_text)
@@ -162,10 +208,11 @@ async function fetch_Folder()
     parsed_body = parsed_html_files[0].body;
     
     add_buttons();
-    
     update_element_menu();
     update_iframe();
 }
+
+
 
 function add_buttons()
 {
@@ -219,7 +266,6 @@ function change_html_file_path(file_array, array_of_files, property, from_proper
     }
 }
 
-
 function update_element_menu()
 {
     let element_list_node = document.getElementById("element_list");
@@ -255,7 +301,6 @@ function update_element_menu()
     print_element_menu(parsed_html.body, body_ul);
     
 }
-
 
 let selected_element;
 function print_element_menu(from, element_list_node)
@@ -374,8 +419,6 @@ function update_iframe(scale)
     iframe.srcdoc = parsed_html.documentElement.outerHTML;
     iframe.removeAttribute("src");
 }
-
-
 
 function prompt_name()
 {
