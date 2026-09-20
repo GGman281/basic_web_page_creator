@@ -112,21 +112,39 @@ function _init_()
 function rule_property_update(event)
 {   
     const rule_control = document.getElementById("css_rule_control");
-    let rule_control_inner_html;
     if(!event)
     {
-        rule_control.innerHTML = selected_rule.description;
+        rule_control.innerHTML = selected_rule.description + "<br />" + generate_property_field_change()
         return;
     }
     selected_rule = event.target.selectedOptions[0].rule;
-    rule_control_inner_html = selected_rule.description;
-    rule_control.innerHTML = rule_control_inner_html;
-    
+    rule_control.innerHTML = selected_rule.description + "<br />" + generate_property_field_change();
 }
 
 function generate_property_field_change()
 {
-    // To be done
+    let rule_control_inner_html = "";
+    for(const property of selected_rule.accepts)
+    {
+        console.log(property)
+        if(property.type === "unit")
+        {
+            rule_control_inner_html += " units: ";
+            //TODO: create SELECT menu for units (em, rm etc) and mode (inherit) 
+        }
+        else if(property.type === "border_type")
+        {
+            rule_control_inner_html += " border type: ";
+            //TODO: create SELECT menu for border types
+        }
+        else
+        {
+            rule_control_inner_html += property.name + ": ";
+            rule_control_inner_html += "<input type='" + property.type + "' />\n";
+        }
+    }
+    console.log(rule_control_inner_html)
+    return rule_control_inner_html;
 }
 
 function check_html(html_text)
