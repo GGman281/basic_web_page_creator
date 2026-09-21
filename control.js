@@ -130,7 +130,8 @@ function generate_property_field_change()
         if(property.type === "unit")
         {
             rule_control_inner_html += " units: ";
-            //TODO: create SELECT menu for units (em, rm etc) and mode (inherit) 
+            let units = ["%", "cap", "ch", "cm", "cqb", "cqh", "cqi", "cqmax", "cqw", "dvb", "dvh", "dvi", "dvw", "em", "ex", "fr", "ic", "in", "lh", "lvb", "lvh", "lvi", "lvw", "mm", "pc", "pt", "px", "q", "rcap", "rch", "rem", "rex", "ric", "rlh", "svb", "svh", "svi", "svw", "vb", "vh", "vi", "vmax", "vmin", "vw"];
+            generate_selection_property_list(units);
         }
         else if(property.type === "border_type")
         {
@@ -140,11 +141,21 @@ function generate_property_field_change()
         else
         {
             rule_control_inner_html += property.name + ": ";
-            rule_control_inner_html += "<input type='" + property.type + "' />\n";
+            rule_control_inner_html += "<input type='" + property.type + "' />";
         }
     }
-    console.log(rule_control_inner_html)
     return rule_control_inner_html;
+}
+
+function generate_selection_property_list(array_of_options)
+{
+    let option_menu_html_text = "<select>\n";
+    for(const option of array_of_options)
+    {
+        option_menu_html_text += "<option>" + option + "</option>\n";
+    }
+    option_menu_html_text += "</select>";
+    return option_menu_html_text;
 }
 
 function check_html(html_text)
