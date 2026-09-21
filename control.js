@@ -126,18 +126,17 @@ function generate_property_field_change()
     let rule_control_inner_html = "";
     for(const property of selected_rule.accepts)
     {
-        console.log(property)
         if(property.type === "unit")
         {
             rule_control_inner_html += " units: ";
             const units = ["%", "cap", "ch", "cm", "cqb", "cqh", "cqi", "cqmax", "cqw", "dvb", "dvh", "dvi", "dvw", "em", "ex", "fr", "ic", "in", "lh", "lvb", "lvh", "lvi", "lvw", "mm", "pc", "pt", "px", "q", "rcap", "rch", "rem", "rex", "ric", "rlh", "svb", "svh", "svi", "svw", "vb", "vh", "vi", "vmax", "vmin", "vw"];
-            generate_selection_property_list(units);
+            rule_control_inner_html += generate_selection_property_list(units);
         }
         else if(property.type === "border_type")
         {
             rule_control_inner_html += " border type: ";
             const border_styles = ["solid", "dashed", "dotted", "ridge", "double", "groove", "inset", "outset"]
-            generate_property_field_change(border_styles); 
+            rule_control_inner_html += generate_property_field_change(border_styles); 
         }
         else
         {
@@ -322,7 +321,6 @@ function update_element_menu()
         document.getElementById("add_as_current_button").disabled = true;
         body_li.classList.add("selected");
         selected_element = body_li;
-        console.log(selected_element);
     });
     element_list_node.appendChild(body_li);
     
