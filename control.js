@@ -56,6 +56,7 @@ let selected_rule = css_rules[0];
 let parsed_html_files;
 let parsed_html;
 let parsed_body;
+let rule_property_window;
 
 
 import_Folder.addEventListener("change", () =>
@@ -104,9 +105,59 @@ function _init_()
     
     rule_property_update();
     
+    
+    
     //TODO: fix bottom scrollbar not showing unless zooming was used
     update_iframe(0.1);
     update_iframe(-0.1);
+}
+
+function choose_style()
+{
+    const rule_control = document.getElementById("css_rule_control");
+    if(!selected_element)
+    {
+        return;
+    }
+    let id = selected_element.element.id;
+    let classes = selected_element.element.classList;
+    if(!id && classes.length === 0)
+    {
+        const rule_control = document.getElementById("css_control");
+        rule_property_window = rule_control;
+        rule_control.innerHTML = "No classes/id is assigned to selected element. <br />" + 
+        "Please choose a type and provide a name. <br />" + 
+        "<input type='text' id='new_style_name' /> <br />" +
+        "Type: <br />" +
+        "<input type='radio' id='new_id_style' name='style_type' value='id'/>Id <br />"+ 
+        "<input type='radio' id='new_class_style' name='style_type' value='class'/>Class<br />" + 
+        "<button onclick='set_new_style()'>Set</button>";
+    }
+    else
+    {
+        //TODO: choice between classes
+    }
+}
+
+function set_new_style()
+{
+    const name = document.getElementById("new_style_name").value;
+    if(name.length === 0)
+    {
+        alert("Please provide a name for the style");
+        return;
+    }
+    if(document.getElementById("new_id_style").checked)
+    {
+        selected_element.element.id = name;
+    }
+    else if(document.getElementById("new_class_style").checked)
+    {
+        selected_element.element.classList.add(name);
+    }
+    
+    update_element_menu();
+    update_iframe();
 }
 
 function rule_property_update(event)
@@ -241,8 +292,6 @@ async function fetch_Folder()
     update_iframe();
 }
 
-
-
 function add_buttons()
 {
     const menu = document.getElementById("choices");
@@ -314,13 +363,7 @@ function update_element_menu()
     body_li.element = parsed_html.body;
     body_li.addEventListener("click", function()
     {
-        if(selected_element)
-        {
-            selected_element.classList.remove("selected");
-        }
-        document.getElementById("add_as_current_button").disabled = true;
-        body_li.classList.add("selected");
-        selected_element = body_li;
+        select_element(body_li, true)
     });
     element_list_node.appendChild(body_li);
     
@@ -341,14 +384,7 @@ function print_element_menu(from, element_list_node)
         li.element = element;
         li.addEventListener("click", function()
         {
-            if(selected_element)
-            {
-                selected_element.classList.remove("selected");
-            }
-
-            document.getElementById("add_as_current_button").disabled = false;
-            li.classList.add("selected");
-            selected_element = li;
+            select_element(li, false)
         });
         
         li.innerHTML += get_element_connections(element);
@@ -361,6 +397,19 @@ function print_element_menu(from, element_list_node)
             element_list_node.appendChild(ul);
         }
     }
+}
+
+function select_element(li, current_level_button_disabled)
+{
+    if(selected_element)
+    {
+        selected_element.classList.remove("selected");
+    }
+
+    document.getElementById("add_as_current_button").disabled = current_level_button_disabled;
+    li.classList.add("selected");
+    selected_element = li;
+    choose_style();
 }
 
 function get_element_connections(from)
@@ -522,8 +571,6 @@ function prompt_file_choice(file_array)
     }while(choice < 0 || choice > file_array.length - 1 || isNaN(choice));
     return file_array[choice];
 }
-
-
 
 function download(type)
 {
