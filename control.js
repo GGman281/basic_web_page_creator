@@ -114,7 +114,7 @@ function _init_()
 
 function choose_style()
 {
-    const rule_control = document.getElementById("css_rule_control");
+    const rule_control = document.getElementById("css_control");
     if(!selected_element)
     {
         return;
@@ -123,8 +123,10 @@ function choose_style()
     let classes = selected_element.element.classList;
     if(!id && classes.length === 0)
     {
-        const rule_control = document.getElementById("css_control");
-        rule_property_window = rule_control;
+        if(!rule_property_window)
+        {
+            rule_property_window = rule_control.innerHTML;
+        }
         rule_control.innerHTML = "No classes/id is assigned to selected element. <br />" + 
         "Please choose a type and provide a name. <br />" + 
         "<input type='text' id='new_style_name' /> <br />" +
@@ -135,7 +137,7 @@ function choose_style()
     }
     else
     {
-        //TODO: choice between classes
+        rule_control.innerHTML = rule_property_window;
     }
 }
 
