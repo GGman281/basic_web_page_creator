@@ -136,7 +136,7 @@ function choose_style()
         "<input type='radio' id='new_class_style' name='style_type' value='class'/>Class<br />" + 
         "<button onclick='set_new_style()'>Set</button>";
     }
-    else if(id || (classes.length == 1 && !id)) // only id or only one style
+    else if((id && classes.length == 0) || (classes.length == 1 && !id)) // only id or only one style
     {
         rule_control.innerHTML = rule_property_window;
         document.getElementById("styles_selection").outerHTML = "";
@@ -160,11 +160,14 @@ function choose_style()
 
             css_select.appendChild(option);
         }
+        
         if(id)
         {
             const option = document.createElement("Option");
             option.style_selector = id;
             option.textContent = id;
+            
+            css_select.appendChild(option);
         }
     }
 }
