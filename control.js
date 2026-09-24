@@ -52,11 +52,12 @@ const css_rules = [
         {name:"Right", type:"number"}, {type:"unit"}]},
     {rule:"transition", description: "Makes a transition between styles smooth within given time span", accepts:[{name:"Time", type:"number"}]}
 ];
-let selected_rule = css_rules[0];
-let parsed_html_files;
-let parsed_html;
-let parsed_body;
-let rule_property_window;
+let selected_rule = css_rules[0]; // curently selected rule on the list
+let parsed_html_files; // html files in directory
+let parsed_html; // parsed html file using DOMparser
+let rule_property_window; // used for storing style window state
+let css_current_selector; // selected id/style of selected element (TODO)
+
 
 
 import_Folder.addEventListener("change", () =>
@@ -104,7 +105,7 @@ function _init_()
     }
     
     rule_property_update();
-    
+    rule_property_window = document.getElementById("css_control").innerHTML;
     
     
     //TODO: fix bottom scrollbar not showing unless zooming was used
@@ -135,9 +136,36 @@ function choose_style()
         "<input type='radio' id='new_class_style' name='style_type' value='class'/>Class<br />" + 
         "<button onclick='set_new_style()'>Set</button>";
     }
+    else if(id || (classes.length == 1 && !id)) // only id or only one style
+    {
+        rule_control.innerHTML = rule_property_window;
+        document.getElementById("styles_selection").outerHTML = "";
+        document.getElementById("styles_selection_part").innerHTML = "";
+    }
     else
     {
         rule_control.innerHTML = rule_property_window;
+        document.getElementById("styles_selection_part").innerHTML = "Choose which style to edit: ";
+        const css_select = document.getElementById("styles_selection");
+        css_select.onchange = function(event)
+        {
+            //todo
+        };
+        
+        for(const element_class of classes)
+        {
+            const option = document.createElement("option");
+            option.style_selector = element_class;
+            option.textContent = element_class;
+
+            css_select.appendChild(option);
+        }
+        if(id)
+        {
+            const option = document.createElement("Option");
+            option.style_selector = id;
+            option.textContent = id;
+        }
     }
 }
 
@@ -287,7 +315,6 @@ async function fetch_Folder()
     }
     
     parsed_html = parsed_html_files[0];
-    parsed_body = parsed_html_files[0].body;
     
     add_buttons();
     update_element_menu();
@@ -319,7 +346,6 @@ function choose_html(index)
 {
     selected_element = undefined;
     parsed_html = parsed_html_files[index];
-    parsed_body = parsed_html_files[index].body;
     update_element_menu();
     update_iframe();
 }

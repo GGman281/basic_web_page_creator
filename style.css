@@ -56,7 +56,11 @@ hr
 #add_element_menu select
 {
     width: 90%;
-    
+}
+
+#styles_selection
+{
+    margin-bottom: 1em;
 }
 
 #add_as_current_button:disabled
