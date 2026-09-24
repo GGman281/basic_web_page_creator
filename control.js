@@ -139,6 +139,14 @@ function choose_style()
     else if((id && classes.length == 0) || (classes.length == 1 && !id)) // only id or only one style
     {
         rule_control.innerHTML = rule_property_window;
+        if(id)
+        {
+            css_current_selector = id;
+        }
+        else
+        {
+            css_current_selector = classes[0];
+        }
         document.getElementById("styles_selection").outerHTML = "";
         document.getElementById("styles_selection_part").innerHTML = "";
     }
@@ -149,7 +157,7 @@ function choose_style()
         const css_select = document.getElementById("styles_selection");
         css_select.onchange = function(event)
         {
-            //todo
+            css_current_selector = event.target.style_selector;
         };
         
         for(const element_class of classes)
@@ -169,6 +177,8 @@ function choose_style()
             
             css_select.appendChild(option);
         }
+        
+        css_current_selector = document.getElementById("styles_selection").selectedOptions[0].style_selector;
     }
 }
 
