@@ -164,7 +164,7 @@ function choose_style()
         {
             const option = document.createElement("option");
             option.style_selector = element_class;
-            option.textContent = element_class;
+            option.textContent = "." + element_class;
 
             css_select.appendChild(option);
         }
@@ -173,7 +173,7 @@ function choose_style()
         {
             const option = document.createElement("Option");
             option.style_selector = id;
-            option.textContent = id;
+            option.textContent = "#" + id;
             
             css_select.appendChild(option);
         }
@@ -460,7 +460,17 @@ function get_element_connections(from)
     {
         connections += " ";
         connections += "<font color='yellow'>[Styles: ";
-        connections += from.className + " " + from.id;
+        if(from.classList.length > 0)
+        {
+            for(const _class of from.classList)
+            {
+                connections += " ." + _class;
+            }
+        }
+        if(from.id)
+        {
+            connections += " #" + from.id;
+        }
         connections += "]</font>";
     }
     if(from.attributes.onclick)
