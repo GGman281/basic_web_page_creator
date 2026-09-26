@@ -87,12 +87,25 @@ function _init_()
     }
     
     
-    const css_rule_select = document.getElementById("css_rules");
-    css_rule_select.onchange = function(event)
-    {
-        rule_property_update(event);
-    }
     
+    connect_css_rule_select();
+    
+    
+    
+    rule_property_update();
+    rule_property_window = document.getElementById("css_control").innerHTML;
+    
+    
+    //TODO: fix bottom scrollbar not showing unless zooming was used
+    update_iframe(0.1);
+    update_iframe(-0.1);
+}
+
+function connect_css_rule_select()
+{
+    
+    const css_rule_select = document.getElementById("css_rules");
+    css_rule_select.innerHTML = "";
     // Options for CSS rules
     for(const rule of css_rules)
     {
@@ -103,14 +116,19 @@ function _init_()
 
         css_rule_select.appendChild(option);
     }
+    css_rule_select.onchange = function(event)
+    {
+        rule_property_update(event);
+    }
     
-    rule_property_update();
-    rule_property_window = document.getElementById("css_control").innerHTML;
-    
-    
-    //TODO: fix bottom scrollbar not showing unless zooming was used
-    update_iframe(0.1);
-    update_iframe(-0.1);
+    const css_select = document.getElementById("styles_selection")
+    if(css_select)
+    {
+        css_select.onchange = function(event)
+        {
+            css_current_selector = event.target.style_selector;
+        };
+    }
 }
 
 function choose_style()
@@ -139,6 +157,7 @@ function choose_style()
     else if((id && classes.length == 0) || (classes.length == 1 && !id)) // only id or only one style
     {
         rule_control.innerHTML = rule_property_window;
+        connect_css_rule_select()
         if(id)
         {
             css_current_selector = id;
@@ -153,12 +172,10 @@ function choose_style()
     else
     {
         rule_control.innerHTML = rule_property_window;
-        document.getElementById("styles_selection_part").innerHTML = "Choose which style to edit: ";
+        connect_css_rule_select()
         const css_select = document.getElementById("styles_selection");
-        css_select.onchange = function(event)
-        {
-            css_current_selector = event.target.style_selector;
-        };
+        document.getElementById("styles_selection_part").innerHTML = "Choose which style to edit: ";
+        
         
         for(const element_class of classes)
         {
@@ -636,7 +653,7 @@ function download(type)
         let html_file;
         if(html_files.length === 0)
         {
-            console.log("No html file found in folder. Using default template");
+            alert("No html file found in folder. Using default template");
         }
         else if(html_files.length == 1)
         {
