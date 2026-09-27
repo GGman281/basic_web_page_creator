@@ -247,12 +247,12 @@ function generate_property_field_change()
         {
             rule_control_inner_html += " border type: ";
             const border_styles = ["solid", "dashed", "dotted", "ridge", "double", "groove", "inset", "outset"]
-            rule_control_inner_html += generate_property_field_change(border_styles); 
+            rule_control_inner_html += generate_selection_property_list(border_styles); 
         }
         else
         {
             rule_control_inner_html += property.name + ": ";
-            rule_control_inner_html += "<input type='" + property.type + "' />";
+            rule_control_inner_html += "<input type='" + property.type + "' class='css_rule_input_field'/>";
         }
     }
     return rule_control_inner_html;
@@ -260,13 +260,45 @@ function generate_property_field_change()
 
 function generate_selection_property_list(array_of_options)
 {
-    let option_menu_html_text = "<select>\n";
+    let option_menu_html_text = "<select class='css_rule_input_field'>\n";
     for(const option of array_of_options)
     {
         option_menu_html_text += "<option>" + option + "</option>\n";
     }
     option_menu_html_text += "</select>";
     return option_menu_html_text;
+}
+
+function set_style()
+{
+    const input_fields = document.getElementsByClassName("css_rule_input_field");
+    let rule_property = "";
+    let css_error = false;
+    for(const field of input_fields)
+    {
+        if(field.classList.contains("css_empty"))
+        {
+            field.classList.remove("css_empty");
+        }
+        
+        if(field.nodeName == "SELECT")
+        {
+            rule_property += field.selectedOptions[0].value + " ";
+            //console.log(field.selectedOptions[0].value)
+        }
+        else
+        {
+            if(field.value.length === 0)
+            {
+                css_error = true;
+                field.classList.add("css_empty")
+            }
+            rule_property += field.value;
+            //console.log(field.value);
+        }
+    }
+    
+    console.log(rule_property)
 }
 
 function check_html(html_text)

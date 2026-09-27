@@ -36,6 +36,11 @@ hr
     width:90%;
 }
 
+.css_empty
+{
+    border-color: red;
+}
+
 #middle
 {
     justify-content: space-between;
