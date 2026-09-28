@@ -56,7 +56,7 @@ let selected_rule = css_rules[0]; // curently selected rule on the list
 let parsed_html_files; // html files in directory
 let parsed_html; // parsed html file using DOMparser
 let rule_property_window; // used for storing style window state
-let css_current_selector; // selected id/style of selected element (TODO)
+let css_current_selector; // selected id/style of selected element
 
 
 
@@ -160,11 +160,11 @@ function choose_style()
         connect_css_rule_select()
         if(id)
         {
-            css_current_selector = id;
+            css_current_selector = "#" + id;
         }
         else
         {
-            css_current_selector = classes[0];
+            css_current_selector = "." + classes[0];
         }
         document.getElementById("styles_selection").outerHTML = "";
         document.getElementById("styles_selection_part").innerHTML = "";
@@ -180,7 +180,7 @@ function choose_style()
         for(const element_class of classes)
         {
             const option = document.createElement("option");
-            option.style_selector = element_class;
+            option.style_selector = "." + element_class;
             option.textContent = "." + element_class;
 
             css_select.appendChild(option);
@@ -189,7 +189,7 @@ function choose_style()
         if(id)
         {
             const option = document.createElement("Option");
-            option.style_selector = id;
+            option.style_selector = "#" + id;
             option.textContent = "#" + id;
             
             css_select.appendChild(option);
@@ -269,9 +269,10 @@ function generate_selection_property_list(array_of_options)
     return option_menu_html_text;
 }
 
-function set_style()
+async function set_style()
 {
     const input_fields = document.getElementsByClassName("css_rule_input_field");
+    const rule = document.getElementById("css_rules");
     let rule_property = "";
     let css_error = false;
     for(const field of input_fields)
@@ -298,8 +299,46 @@ function set_style()
         }
     }
     
-    console.log(rule_property)
+    if(!css_files)
+    {
+        alert("Placeholder error. No css file found");
+        return;
+    }
+    
+    let updated_stylesheet_text = "";
+    
+    for(const css_file of css_files)
+    {
+        let css_file_text = await css_file.text()
+        const stylesheet = new CSSStyleSheet();
+        await stylesheet.replace(css_file_text);
+        
+        for(const rule of stylesheet.cssRules)
+        {
+            if(rule.selectorText == css_current_selector)
+            {
+                rule.style.setProperty(selected_rule.rule, rule_property);
+            }
+            updated_stylesheet_text += rule.cssText + "\n";
+        }
+        
+    }
+    
+    
+    let preview_style = parsed_html.head.querySelector("#preview");
+    
+    if(!preview_style)
+    {
+        preview_style = parsed_html.createElement("style");
+        preview_style.id = "preview";
+        parsed_html.head.appendChild(preview_style);
+    }
+
+    preview_style.textContent = updated_stylesheet_text;
+
+    update_iframe();
 }
+
 
 function check_html(html_text)
 {
