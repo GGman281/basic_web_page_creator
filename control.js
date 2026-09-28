@@ -1,58 +1,8 @@
 // get and fetch working directory
 const import_Folder = document.getElementById("folder");
 const iframe = document.getElementById("embed");
-const elements = [
-    "div",
-    "p",
-    "span",
-    "h1",
-    "h2",
-    "h3",
-    "a",
-    "img",
-    "button",
-    "input",
-    "textarea",
-    "ul",
-    "ol",
-    "li",
-    "table",
-    "section",
-    "article",
-    "header",
-    "footer",
-    "nav"
-];
 
-/*
-css rule:
-    rule - name of the rule in css
-    description - description of the rule
-    accepts - what the rule accepts as valid parameters
-        name - displayable name of the property (can be anything)
-        type - input type
-*/
-const css_rules = [
-    {rule:"background-color", description: "Changes background colour", accepts:[{name:"Colour", type:"color"}]},
-    {rule:"font-size", description: "Changes font size", accepts:[{name:"Font size", type:"number"}, {type:"unit"}]},
-    {rule:"font-family", description: "Changes font", accepts:[{name:"Font name", type:"text"}]},
-    {rule:"width", description: "Changes width", accepts:[{name:"Amount", type:"number"}, {type:"unit"}]},
-    {rule:"height", description: "Changes height", accepts:[{name:"Amount", type:"number"}, {type:"unit"}]},
-    {rule:"color", description: "Changes colour of the font", accepts:[{name:"Colour", type:"color"}]},
-    {rule:"border", description: "Changes border properties", accepts:[{name:"Width", type:"number"}, {type:"unit"}, {name:"Border type", type:"border_type"}, {name:"Colour", type:"color"}]},
-    {rule:"padding", description: "Changes space around an element's content <b>inside<b> the element", accepts:[
-        {name:"Top", type:"number"},{type:"unit"}, 
-        {name:"Bottom", type:"number"}, {type:"unit"},
-        {name:"Left", type:"number"}, {type:"unit"},
-        {name:"Right", type:"number"}, {type:"unit"}]},
-    {rule:"margin", description: "Changes space around an element's content <b>outside<b> the element", accepts:[
-        {name:"Top", type:"number"},{type:"unit"}, 
-        {name:"Bottom", type:"number"}, {type:"unit"},
-        {name:"Left", type:"number"}, {type:"unit"},
-        {name:"Right", type:"number"}, {type:"unit"}]},
-    {rule:"transition", description: "Makes a transition between styles smooth within given time span", accepts:[{name:"Time", type:"number"}]}
-];
-let selected_rule = css_rules[0]; // curently selected rule on the list
+
 let parsed_html_files; // html files in directory
 let parsed_html; // parsed html file using DOMparser
 let rule_property_window; // used for storing style window state
@@ -74,61 +24,16 @@ function _init_()
     iframe.srcdoc = "";
     iframe.removeAttribute("srcdoc");
     iframe.src = "default.html";
+    //TODO: fix bottom scrollbar not showing unless zooming was used
+    update_iframe(0.1);
+    update_iframe(-0.1);
     
-    // Options for elements list
-    const element_select = document.getElementById("elements");
-    for(const element of elements)
-    {
-        const option = document.createElement("option");
-        option.value = element;
-        option.textContent = element;
-
-        element_select.appendChild(option);
-    }
-    
-    
-    
+    generate_element_list();
     connect_css_rule_select();
-    
-    
-    
     rule_property_update();
     rule_property_window = document.getElementById("css_control").innerHTML;
     
     
-    //TODO: fix bottom scrollbar not showing unless zooming was used
-    update_iframe(0.1);
-    update_iframe(-0.1);
-}
-
-function connect_css_rule_select()
-{
-    
-    const css_rule_select = document.getElementById("css_rules");
-    css_rule_select.innerHTML = "";
-    // Options for CSS rules
-    for(const rule of css_rules)
-    {
-        const option = document.createElement("option");
-        option.value = rule.rule;
-        option.textContent = rule.rule;
-        option.rule = rule;
-
-        css_rule_select.appendChild(option);
-    }
-    css_rule_select.onchange = function(event)
-    {
-        rule_property_update(event);
-    }
-    
-    const css_select = document.getElementById("styles_selection")
-    if(css_select)
-    {
-        css_select.onchange = function(event)
-        {
-            css_current_selector = event.target.style_selector;
-        };
-    }
 }
 
 function choose_style()
@@ -230,43 +135,6 @@ function rule_property_update(event)
     }
     selected_rule = event.target.selectedOptions[0].rule;
     rule_control.innerHTML = selected_rule.description + "<br />" + generate_property_field_change();
-}
-
-function generate_property_field_change()
-{
-    let rule_control_inner_html = "";
-    for(const property of selected_rule.accepts)
-    {
-        if(property.type === "unit")
-        {
-            rule_control_inner_html += " units: ";
-            const units = ["%", "cap", "ch", "cm", "cqb", "cqh", "cqi", "cqmax", "cqw", "dvb", "dvh", "dvi", "dvw", "em", "ex", "fr", "ic", "in", "lh", "lvb", "lvh", "lvi", "lvw", "mm", "pc", "pt", "px", "q", "rcap", "rch", "rem", "rex", "ric", "rlh", "svb", "svh", "svi", "svw", "vb", "vh", "vi", "vmax", "vmin", "vw"];
-            rule_control_inner_html += generate_selection_property_list(units);
-        }
-        else if(property.type === "border_type")
-        {
-            rule_control_inner_html += " border type: ";
-            const border_styles = ["solid", "dashed", "dotted", "ridge", "double", "groove", "inset", "outset"]
-            rule_control_inner_html += generate_selection_property_list(border_styles); 
-        }
-        else
-        {
-            rule_control_inner_html += property.name + ": ";
-            rule_control_inner_html += "<input type='" + property.type + "' class='css_rule_input_field'/>";
-        }
-    }
-    return rule_control_inner_html;
-}
-
-function generate_selection_property_list(array_of_options)
-{
-    let option_menu_html_text = "<select class='css_rule_input_field'>\n";
-    for(const option of array_of_options)
-    {
-        option_menu_html_text += "<option>" + option + "</option>\n";
-    }
-    option_menu_html_text += "</select>";
-    return option_menu_html_text;
 }
 
 async function set_style()
@@ -502,32 +370,6 @@ function update_element_menu()
     
 }
 
-let selected_element;
-function print_element_menu(from, element_list_node)
-{
-    for(const element of from.children)
-    {
-        const li = document.createElement("li");
-        li.textContent = element.tagName.toLowerCase();
-        
-        li.element = element;
-        li.addEventListener("click", function()
-        {
-            select_element(li, false)
-        });
-        
-        li.innerHTML += get_element_connections(element);
-        
-        element_list_node.appendChild(li);
-        if(element.children.length > 0)
-        {
-            const ul = document.createElement("ul");
-            print_element_menu(element, ul);
-            element_list_node.appendChild(ul);
-        }
-    }
-}
-
 function select_element(li, current_level_button_disabled)
 {
     if(selected_element)
@@ -636,20 +478,6 @@ function update_iframe(scale)
     iframe.removeAttribute("src");
 }
 
-function prompt_name()
-{
-    let name = prompt("Put file name here: ");
-    if(name === null || name.length === 0)
-    {
-        let repeat = confirm("Warning: input field is empty or user cancelled. \nFile name remain the same.");
-        while(!repeat && (name === null || name.length === 0))
-        {
-            name = prompt("Put file name here: ");
-        }
-    }
-    return name;
-}
-
 function add_element_as(level)
 {
     if(!selected_element)
@@ -671,117 +499,3 @@ function add_element_as(level)
     update_element_menu();
     update_iframe();
 }
-
-function export_file(file, blob, extension)
-{
-    const a = document.createElement("a");
-    a.style.display = 'none';        
-    const url = window.URL.createObjectURL(blob);
-    a.href = url;
-    
-    let filename = prompt_name();
-    if(filename === null || filename.length === 0)
-    {
-        a.download = file?.name || "index" + extension;
-    }
-    else
-    {
-        a.download = filename + extension;
-    } 
-    
-    document.body.appendChild(a);
-    a.click();
-    
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-function prompt_file_choice(file_array)
-{
-    let message = "Please choose file: \n";
-    for(let i = 0; i < file_array.length; i++)
-    {
-        message += i + ") " + file_array[i].name + "\n";
-    }
-    let choice
-    do
-    {
-        choice = prompt(message);    
-    }while(choice < 0 || choice > file_array.length - 1 || isNaN(choice));
-    return file_array[choice];
-}
-
-function download(type)
-{
-    
-    
-    if(type === "html")
-    {
-        change_html_file_path(js_files, parsed_html.scripts, "src", "webkitRelativePath",  "name");
-        change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "webkitRelativePath", "name");
-        
-        const blob = new Blob(["<!DOCTYPE HTML>\n" + parsed_html.documentElement.outerHTML], {type: "text/html"});
-        let html_file;
-        if(html_files.length === 0)
-        {
-            alert("No html file found in folder. Using default template");
-        }
-        else if(html_files.length == 1)
-        {
-            html_file = html_files[0];
-        }
-        else
-        {
-            html_file = prompt_file_choice(html_files);
-        }
-        export_file(html_file, blob, ".html");
-        
-        change_html_file_path(css_files, parsed_html.querySelectorAll('link[rel="stylesheet"]'), "href", "name", "webkitRelativePath");
-        change_html_file_path(js_files, parsed_html.scripts, "src",  "name", "webkitRelativePath");
-        
-        update_iframe();
-    }
-    else if(type === "css")
-    { 
-        let css_file;
-        if(css_files.length === 0)
-        {
-            console.error("Couldn't find css file");
-            return;
-        }
-        if(css_files.length == 1)
-        {
-            css_file = css_files[0];
-        }
-        else
-        {
-            css_file = prompt_file_choice(css_files);
-        }
-        
-        const blob = new Blob([css_file], {type: "text/css"});
-        export_file(css_file, blob, ".css");
-    }
-    else if(type === "js")
-    {
-        let js_file;
-        if(js_files.length === 0)
-        {
-            console.error("Couldn't find js file");
-            return;
-        }
-        if(js_files.length == 1)
-        {
-            js_file = js_files[0];
-        }
-        else
-        {
-            js_file = prompt_file_choice(js_files);
-        }
-        
-        
-        const blob = new Blob([js_file], {type: "text/javascript"});
-        export_file(js_file, blob, ".js");
-    }
-}
-
-//todo: export all files option
