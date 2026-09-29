@@ -87,7 +87,7 @@ function choose_style()
             const option = document.createElement("option");
             option.style_selector = "." + element_class;
             option.textContent = "." + element_class;
-
+            
             css_select.appendChild(option);
         }
         
@@ -141,6 +141,7 @@ async function set_style()
 {
     const input_fields = document.getElementsByClassName("css_rule_input_field");
     const rule = document.getElementById("css_rules");
+    let connected_css;
     let rule_property = "";
     let css_error = false;
     for(const field of input_fields)
@@ -153,7 +154,6 @@ async function set_style()
         if(field.nodeName == "SELECT")
         {
             rule_property += field.selectedOptions[0].value + " ";
-            //console.log(field.selectedOptions[0].value)
         }
         else
         {
@@ -163,19 +163,29 @@ async function set_style()
                 field.classList.add("css_empty")
             }
             rule_property += field.value;
-            //console.log(field.value);
         }
     }
+    
+    if(css_error)
+    {
+        alert("Please fill every field");
+        return;
+    }
+    
     
     if(!css_files)
     {
         alert("Placeholder error. No css file found");
         return;
     }
+    else
+    {
+        connected_css = get_connected_css_files()
+    }
     
     let updated_stylesheet_text = "";
-    
-    for(const css_file of css_files)
+    let rule_found = false;
+    for(const css_file of connected_css)
     {
         let css_file_text = await css_file.text()
         const stylesheet = new CSSStyleSheet();
@@ -186,15 +196,25 @@ async function set_style()
             if(rule.selectorText == css_current_selector)
             {
                 rule.style.setProperty(selected_rule.rule, rule_property);
+                rule_found = true;
             }
             updated_stylesheet_text += rule.cssText + "\n";
         }
-        
+    }
+    if(!rule_found)
+    {
+        updated_stylesheet_text = "";
+        let css_file_text = await connected_css[0].text()
+        const stylesheet = new CSSStyleSheet();
+        await stylesheet.replace(css_file_text);
+        stylesheet.insertRule(css_current_selector + " { " + selected_rule.rule + ": " + rule_property + "}")
+        for(const rule of stylesheet.cssRules)
+        {
+            updated_stylesheet_text += rule.cssText + "\n";
+        }
     }
     
-    
     let preview_style = parsed_html.head.querySelector("#preview");
-    
     if(!preview_style)
     {
         preview_style = parsed_html.createElement("style");
@@ -207,6 +227,32 @@ async function set_style()
     update_iframe();
 }
 
+function get_connected_css_files()
+{
+    const links = parsed_html.head.querySelectorAll("link");
+    let connected_css_names = new Array();
+    for(const link of links)
+    {
+        if(link.href.endsWith(".css"))
+        {
+            connected_css_names.push(link.href);
+        }
+    }
+    
+    let connected_css_files = new Array();
+    
+    for(const connected_css_name of connected_css_names)
+    {
+        for(const css_file of css_files)
+        {
+            if(connected_css_name.endsWith(css_file.webkitRelativePath))
+            {
+                connected_css_files.push(css_file);
+            }
+        }
+    }
+    return connected_css_files;
+}
 
 function check_html(html_text)
 {

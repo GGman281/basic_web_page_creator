@@ -90,7 +90,7 @@ function connect_css_rule_select()
     {
         css_select.onchange = function(event)
         {
-            css_current_selector = event.target.style_selector;
+            css_current_selector = event.target.selectedOptions[0].style_selector;
         };
     }
 }
