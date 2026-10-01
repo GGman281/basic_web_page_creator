@@ -32,7 +32,7 @@ function _init_()
     connect_css_rule_select();
     rule_property_update();
     rule_property_window = document.getElementById("css_control").innerHTML;
-    
+    document.getElementById("css_control").style.display = "none";
     
 }
 
@@ -331,6 +331,7 @@ async function fetch_Folder()
     
     parsed_html = parsed_html_files[0];
     
+    document.getElementById("css_control").style.display = "";
     add_buttons();
     update_element_menu();
     update_iframe();
