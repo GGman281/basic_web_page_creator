@@ -31,24 +31,24 @@ css rule:
         type - input type
 */
 const css_rules = [
-    {rule:"background-color", description: "Changes background colour", accepts:[{name:"Colour", type:"color"}]},
-    {rule:"font-size", description: "Changes font size", accepts:[{name:"Font size", type:"number"}, {type:"unit"}]},
-    {rule:"font-family", description: "Changes font", accepts:[{name:"Font name", type:"text"}]},
-    {rule:"width", description: "Changes width", accepts:[{name:"Amount", type:"number"}, {type:"unit"}]},
-    {rule:"height", description: "Changes height", accepts:[{name:"Amount", type:"number"}, {type:"unit"}]},
-    {rule:"color", description: "Changes colour of the font", accepts:[{name:"Colour", type:"color"}]},
-    {rule:"border", description: "Changes border properties", accepts:[{name:"Width", type:"number"}, {type:"unit"}, {name:"Border type", type:"border_type"}, {name:"Colour", type:"color"}]},
-    {rule:"padding", description: "Changes space around an element's content <b>inside<b> the element", accepts:[
+    {name:"Background colour", rule:"background-color", description: "Changes background colour", accepts:[{name:"Colour", type:"color"}]},
+    {name:"Font size", rule:"font-size", description: "Changes font size", accepts:[{name:"Font size", type:"number"}, {type:"unit"}]},
+    {name:"Font", rule:"font-family", description: "Changes font", accepts:[{name:"Font name", type:"text"}]},
+    {name:"Width", rule:"width", description: "Changes width", accepts:[{name:"Amount", type:"number"}, {type:"unit"}]},
+    {name:"Height", rule:"height", description: "Changes height", accepts:[{name:"Amount", type:"number"}, {type:"unit"}]},
+    {name:"Font colour", rule:"color", description: "Changes colour of the font", accepts:[{name:"Colour", type:"color"}]},
+    {name:"Border (outline)", rule:"border", description: "Changes border properties", accepts:[{name:"Width", type:"number"}, {type:"unit"}, {name:"Border type", type:"border_type"}, {name:"Colour", type:"color"}]},
+    {name:"Padding", rule:"padding", description: "Changes space around an element's content <b>inside<b> the element", accepts:[
         {name:"Top", type:"number"},{type:"unit"}, 
         {name:"Bottom", type:"number"}, {type:"unit"},
         {name:"Left", type:"number"}, {type:"unit"},
         {name:"Right", type:"number"}, {type:"unit"}]},
-    {rule:"margin", description: "Changes space around an element's content <b>outside<b> the element", accepts:[
+    {name:"Margin", rule:"margin", description: "Changes space around an element's content <b>outside<b> the element", accepts:[
         {name:"Top", type:"number"},{type:"unit"}, 
         {name:"Bottom", type:"number"}, {type:"unit"},
         {name:"Left", type:"number"}, {type:"unit"},
         {name:"Right", type:"number"}, {type:"unit"}]},
-    {rule:"transition", description: "Makes a transition between styles smooth within given time span", accepts:[{name:"Time", type:"number"}]}
+    {name:"Transition length",rule:"transition", description: "Makes a transition between styles smooth within given time span", accepts:[{name:"Time", type:"number"}]}
 ];
 let selected_rule = css_rules[0]; // curently selected rule on the list
 
@@ -75,7 +75,7 @@ function connect_css_rule_select()
     {
         const option = document.createElement("option");
         option.value = rule.rule;
-        option.textContent = rule.rule;
+        option.textContent = rule.name;
         option.rule = rule;
 
         css_rule_select.appendChild(option);
