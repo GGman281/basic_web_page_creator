@@ -140,10 +140,11 @@ function rule_property_update(event)
 async function set_style()
 {
     const input_fields = document.getElementsByClassName("css_rule_input_field");
-    const rule = document.getElementById("css_rules");
+    //const rule = document.getElementById("css_rules");
     let connected_css;
     let rule_property = "";
     let css_error = false;
+    let css_selected_file;
     for(const field of input_fields)
     {
         if(field.classList.contains("css_empty"))
@@ -187,6 +188,10 @@ async function set_style()
     let rule_found = false;
     for(const css_file of connected_css)
     {
+        if(rule_found)
+        {
+            break;
+        }
         let css_file_text = await css_file.text()
         const stylesheet = new CSSStyleSheet();
         await stylesheet.replace(css_file_text);
@@ -196,6 +201,7 @@ async function set_style()
             if(rule.selectorText == css_current_selector)
             {
                 rule.style.setProperty(selected_rule.rule, rule_property);
+                css_selected_file = css_file;
                 rule_found = true;
             }
             updated_stylesheet_text += rule.cssText + "\n";
@@ -205,6 +211,7 @@ async function set_style()
     {
         updated_stylesheet_text = "";
         let css_file_text = await connected_css[0].text()
+        css_selected_file = connected_css[0];
         const stylesheet = new CSSStyleSheet();
         await stylesheet.replace(css_file_text);
         stylesheet.insertRule(css_current_selector + " { " + selected_rule.rule + ": " + rule_property + "}")
@@ -223,7 +230,14 @@ async function set_style()
     }
 
     preview_style.textContent = updated_stylesheet_text;
-
+    const updated_file = new File(
+    [updated_stylesheet_text],
+    css_selected_file.name,
+    {
+        type: "text/css"
+    }
+    );
+    css_files[css_files.indexOf(css_selected_file)] = updated_file;
     update_iframe();
 }
 
